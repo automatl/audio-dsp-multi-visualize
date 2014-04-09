@@ -1,0 +1,6 @@
+[submodule "dsp-utility"]
+	path = dsp-utility
+	url = https://github.com/automatl/dsp-utility.git
+[submodule "juce"]
+	path = juce
+	url = https://github.com/julianstorer/JUCE.git
