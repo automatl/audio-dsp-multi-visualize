@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<JUCERPROJECT id="Oj2Xh2" name="admv" projectType="audioplug" version="1.0.0"
+              bundleIdentifier="com.tomatl.admv" includeBinaryInAppConfig="1"
+              buildVST="1" buildVST3="0" buildAU="1" buildRTAS="0" buildAAX="0"
+              pluginName="admv" pluginDesc="admv" pluginManufacturer="tomatl"
+              pluginManufacturerEmail="support@yourcompany.com" pluginManufacturerCode="Manu"
+              pluginCode="Plug" pluginChannelConfigs="{8, 8}" pluginIsSynth="0"
+              pluginWantsMidiIn="0" pluginProducesMidiOut="0" pluginSilenceInIsSilenceOut="1"
+              pluginEditorRequiresKeys="0" pluginAUExportPrefix="admvAU" pluginRTASCategory=""
+              aaxIdentifier="com.tomatl.admv" pluginAAXCategory="AAX_ePlugInCategory_Dynamics"
+              jucerVersion="3.1.0">
+  <MAINGROUP id="vsKEio" name="admv">
+    <GROUP id="{3637573F-C1BE-6161-8382-C418FF0617B2}" name="Source">
+      <FILE id="oNqnTg" name="TomatlImageType.h" compile="0" resource="0"
+            file="Source/TomatlImageType.h"/>
+      <FILE id="FHS0hP" name="TomatlLookAndFeel.h" compile="0" resource="0"
+            file="Source/TomatlLookAndFeel.h"/>
+      <FILE id="ZN8XjS" name="SpectrometerControl.h" compile="0" resource="0"
+            file="Source/SpectrometerControl.h"/>
+      <FILE id="Oekd7H" name="MainLayout.cpp" compile="1" resource="0" file="Source/MainLayout.cpp"/>
+      <FILE id="bhdSqA" name="MainLayout.h" compile="0" resource="0" file="Source/MainLayout.h"/>
+      <FILE id="v5C4HN" name="GoniometerControl.h" compile="0" resource="0"
+            file="Source/GoniometerControl.h"/>
+      <FILE id="cfYpu5" name="PluginProcessor.cpp" compile="1" resource="0"
+            file="Source/PluginProcessor.cpp"/>
+      <FILE id="BeFhBx" name="PluginProcessor.h" compile="0" resource="0"
+            file="Source/PluginProcessor.h"/>
+      <FILE id="cxpZfo" name="PluginEditor.cpp" compile="1" resource="0"
+            file="Source/PluginEditor.cpp"/>
+      <FILE id="LvkcSw" name="PluginEditor.h" compile="0" resource="0" file="Source/PluginEditor.h"/>
+    </GROUP>
+  </MAINGROUP>
+  <EXPORTFORMATS>
+    <VS2013 targetFolder="Builds/VisualStudio2013" vstFolder="c:\SDKs\vstsdk2.4">
+      <CONFIGURATIONS>
+        <CONFIGURATION name="Debug(x86)" winWarningLevel="4" generateManifest="1" winArchitecture="32-bit"
+                       isDebug="1" optimisation="1" targetName="admv" useRuntimeLibDLL="0"
+                       headerPath="$(SolutionDir)..\..\dsp-utility" binaryPath=""/>
+        <CONFIGURATION name="Release(x86)" winWarningLevel="4" generateManifest="1"
+                       winArchitecture="32-bit" isDebug="0" optimisation="2" targetName="admv"
+                       useRuntimeLibDLL="0" headerPath="$(SolutionDir)..\..\dsp-utility"/>
+        <CONFIGURATION name="Debug(amd64)" winWarningLevel="4" generateManifest="1"
+                       winArchitecture="x64" isDebug="1" optimisation="1" targetName="admv"
+                       useRuntimeLibDLL="0" headerPath="$(SolutionDir)..\..\dsp-utility"/>
+        <CONFIGURATION name="Release(amd64)" winWarningLevel="4" generateManifest="1"
+                       winArchitecture="x64" isDebug="0" optimisation="2" targetName="admv"
+                       useRuntimeLibDLL="0" headerPath="$(SolutionDir)..\..\dsp-utility"/>
+      </CONFIGURATIONS>
+      <MODULEPATHS>
+        <MODULEPATH id="juce_video" path="juce/modules"/>
+        <MODULEPATH id="juce_opengl" path="juce/modules"/>
+        <MODULEPATH id="juce_gui_extra" path="juce/modules"/>
+        <MODULEPATH id="juce_gui_basics" path="juce/modules"/>
+        <MODULEPATH id="juce_graphics" path="juce/modules"/>
+        <MODULEPATH id="juce_events" path="juce/modules"/>
+        <MODULEPATH id="juce_data_structures" path="juce/modules"/>
+        <MODULEPATH id="juce_cryptography" path="juce/modules"/>
+        <MODULEPATH id="juce_core" path="juce/modules"/>
+        <MODULEPATH id="juce_audio_processors" path="juce/modules"/>
+        <MODULEPATH id="juce_audio_plugin_client" path="juce/modules"/>
+        <MODULEPATH id="juce_audio_formats" path="juce/modules"/>
+        <MODULEPATH id="juce_audio_devices" path="juce/modules"/>
+        <MODULEPATH id="juce_audio_basics" path="juce/modules"/>
+      </MODULEPATHS>
+    </VS2013>
+  </EXPORTFORMATS>
+  <MODULES>
+    <MODULES id="juce_audio_basics" showAllCode="0" useLocalCopy="0"/>
+    <MODULES id="juce_audio_devices" showAllCode="0" useLocalCopy="0"/>
+    <MODULES id="juce_audio_formats" showAllCode="0" useLocalCopy="0"/>
+    <MODULES id="juce_audio_plugin_client" showAllCode="0" useLocalCopy="0"/>
+    <MODULES id="juce_audio_processors" showAllCode="0" useLocalCopy="0"/>
+    <MODULES id="juce_core" showAllCode="0" useLocalCopy="0"/>
+    <MODULES id="juce_cryptography" showAllCode="0" useLocalCopy="0"/>
+    <MODULES id="juce_data_structures" showAllCode="0" useLocalCopy="0"/>
+    <MODULES id="juce_events" showAllCode="0" useLocalCopy="0"/>
+    <MODULES id="juce_graphics" showAllCode="0" useLocalCopy="0"/>
+    <MODULES id="juce_gui_basics" showAllCode="0" useLocalCopy="0"/>
+    <MODULES id="juce_gui_extra" showAllCode="0" useLocalCopy="0"/>
+    <MODULES id="juce_opengl" showAllCode="0" useLocalCopy="0"/>
+    <MODULES id="juce_video" showAllCode="0" useLocalCopy="0"/>
+  </MODULES>
+  <JUCEOPTIONS JUCE_QUICKTIME="disabled"/>
+</JUCERPROJECT>
