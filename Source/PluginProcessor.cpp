@@ -10,52 +10,17 @@
 
 #include "PluginProcessor.h"
 #include "PluginEditor.h"
-
+#include <functional>
 
 //==============================================================================
 AdmvAudioProcessor::AdmvAudioProcessor()
 {
-	std::pair<double, double> spectroCalcAttackRelease(0.1, 1000.);
-
-	size_t fftSize = 2048;
 	
-	// TODO: properly calculate with effective sample rate
-	spectroCalcAttackRelease.first = tomatl::dsp::EnvelopeWalker::calculateCoeff(100, 48000 / fftSize);
-	spectroCalcAttackRelease.second = tomatl::dsp::EnvelopeWalker::calculateCoeff(700, 48000 / fftSize);
-
-	mMaxStereoPairCount = JucePlugin_MaxNumInputChannels / 2;
-
-	for (int i = 0; i < mMaxStereoPairCount; ++i)
-	{
-		mGonioCalcs.push_back(new tomatl::dsp::GonioCalculator<double>(1600));
-	}
-
-	for (int i = 0; i < mMaxStereoPairCount; ++i)
-	{
-		mSpectroCalcs.push_back(new tomatl::dsp::SpectroCalculator<double>(spectroCalcAttackRelease, i, fftSize));
-	}
-
-	mSpectroSegments = new tomatl::dsp::SpectrumBlock[mMaxStereoPairCount];
-	mGonioSegments = new GonioPoints<double>[mMaxStereoPairCount];
 }
 
 AdmvAudioProcessor::~AdmvAudioProcessor()
 {
-	for (int i = 0; i < mMaxStereoPairCount; ++i)
-	{
-		delete mGonioCalcs[i];
-	}
-
-	for (int i = 0; i < mMaxStereoPairCount; ++i)
-	{
-		delete mSpectroCalcs[i];
-	}
-
-	mGonioCalcs.clear();
-	mSpectroCalcs.clear();
-
-	delete[] mSpectroSegments;
-	delete[] mGonioSegments;
+	
 }
 
 //==============================================================================
@@ -162,28 +127,76 @@ void AdmvAudioProcessor::changeProgramName (int index, const String& newName)
 //==============================================================================
 void AdmvAudioProcessor::prepareToPlay (double sampleRate, int samplesPerBlock)
 {
-	// Use this method as the place to do any pre-playback
-	// initialisation that you need..
+	std::pair<double, double> spectroCalcAttackRelease(0.1, 1000.);
+
+	size_t fftSize = 2048;
+
+	// Because fft bin magnitude would change every (sampleRate / fftSize), so its sample rate is not equal to signal sample rate!
+	spectroCalcAttackRelease.first = tomatl::dsp::EnvelopeWalker::calculateCoeff(100, sampleRate / fftSize);
+	spectroCalcAttackRelease.second = tomatl::dsp::EnvelopeWalker::calculateCoeff(700, sampleRate / fftSize);
+
+	mMaxStereoPairCount = JucePlugin_MaxNumInputChannels / 2;
+
+	for (int i = 0; i < mMaxStereoPairCount; ++i)
+	{
+		mGonioCalcs.push_back(new tomatl::dsp::GonioCalculator<double>(1600, sampleRate));
+	}
+
+	for (int i = 0; i < mMaxStereoPairCount; ++i)
+	{
+		mSpectroCalcs.push_back(new tomatl::dsp::SpectroCalculator<double>(spectroCalcAttackRelease, i, fftSize));
+	}
+
+	mSpectroSegments = new tomatl::dsp::SpectrumBlock[mMaxStereoPairCount];
+	mGonioSegments = new GonioPoints<double>[mMaxStereoPairCount];
+
+	makeCurrentStateEffective();
 }
 
 void AdmvAudioProcessor::releaseResources()
 {
-	// When playback stops, you can use this as an opportunity to free up any
-	// spare memory, etc.
+	for (int i = 0; i < mMaxStereoPairCount; ++i)
+	{
+		TOMATL_DELETE(mGonioCalcs[i]);
+	}
+
+	for (int i = 0; i < mMaxStereoPairCount; ++i)
+	{
+		TOMATL_DELETE(mSpectroCalcs[i]);
+	}
+
+	mGonioCalcs.clear();
+	mSpectroCalcs.clear();
+
+	TOMATL_BRACE_DELETE(mSpectroSegments);
+	TOMATL_BRACE_DELETE(mGonioSegments);
 }
 
 void AdmvAudioProcessor::processBlock (AudioSampleBuffer& buffer, MidiBuffer& midiMessages)
 {
 	double cp[2];
+	
+	int channelCount = 0;
+	size_t sampleRate = getSampleRate();
 
 	for (int channel = 0; channel < (getNumInputChannels() - 1); channel += 2)
 	{
+		// TODO: investigate how to get number of input channels really connected to the plugin ATM.
+		// It seems that getNumInputChannels() will always return max possible defined by JucePlugin_MaxNumInputChannels
+		// This solution is bad, because it iterates through all input buffers.
+		if (buffer.getMagnitude(channel, 0, buffer.getNumSamples()) == 0. && buffer.getMagnitude(channel + 1, 0, buffer.getNumSamples()) == 0.)
+		{
+			continue;
+		}
+
+		channelCount += 2;
+
 		float* l = buffer.getWritePointer(channel + 0);
 		float* r = buffer.getWritePointer(channel + 1);
 
 		for (int i = 0; i < buffer.getNumSamples(); ++i)
 		{
-			std::pair<double, double>* res = mGonioCalcs[channel / 2]->handlePoint(l[i], r[i]);
+			std::pair<double, double>* res = mGonioCalcs[channel / 2]->handlePoint(l[i], r[i], sampleRate);
 
 			cp[0] = l[i];
 			cp[1] = r[i];
@@ -192,7 +205,7 @@ void AdmvAudioProcessor::processBlock (AudioSampleBuffer& buffer, MidiBuffer& mi
 
 			if (res != NULL && getActiveEditor() != NULL)
 			{
-				mGonioSegments[channel / 2] = GonioPoints<double>(res, mGonioCalcs[channel / 2]->getSegmentLength(), channel / 2);
+				mGonioSegments[channel / 2] = GonioPoints<double>(res, mGonioCalcs[channel / 2]->getSegmentLength(), channel / 2, sampleRate);
 			}
 
 			if (spectroResult.mLength > 0 && getActiveEditor() != NULL)
@@ -202,6 +215,8 @@ void AdmvAudioProcessor::processBlock (AudioSampleBuffer& buffer, MidiBuffer& mi
 		}
 	}
 	
+	mCurrentInputCount = channelCount;
+
 	// In case we have more outputs than inputs, we'll clear any output
 	// channels that didn't contain input data, (because these aren't
 	// guaranteed to be empty - they may contain garbage).
@@ -217,6 +232,20 @@ bool AdmvAudioProcessor::hasEditor() const
 	return true; // (change this to false if you choose to not supply an editor)
 }
 
+void AdmvAudioProcessor::makeCurrentStateEffective()
+{
+	for (int i = 0; i < mGonioCalcs.size(); ++i)
+	{
+		mGonioCalcs[i]->setCustomScaleEnabled(mState.mManualGoniometerScale);
+		mGonioCalcs[i]->setCustomScale(mState.mManualGoniometerScaleValue);
+	}
+
+	if (getActiveEditor() != NULL)
+	{
+		((AdmvAudioProcessorEditor*)getActiveEditor())->updateFromState(mState);
+	}
+}
+
 void AdmvAudioProcessor::numChannelsChanged()
 {
 
@@ -224,7 +253,11 @@ void AdmvAudioProcessor::numChannelsChanged()
 
 AudioProcessorEditor* AdmvAudioProcessor::createEditor()
 {
-	return new AdmvAudioProcessorEditor (this);
+	auto editor = new AdmvAudioProcessorEditor (this);
+
+	editor->updateFromState(mState);
+
+	return editor;
 }
 
 //==============================================================================

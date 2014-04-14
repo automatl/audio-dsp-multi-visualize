@@ -20,11 +20,23 @@
 #include "GoniometerControl.h"
 #include "SpectrometerControl.h"
 #include "TomatlLookAndFeel.h"
+#include <functional>
 //==============================================================================
 /**
 */
 
-class AdmvAudioProcessorEditor  : public AudioProcessorEditor, public Timer
+class EditorAction : public Message
+{
+public: 
+	std::function<void(void)> mAction;
+
+	EditorAction(std::function<void(void)> action)
+	{
+		mAction = action;
+	}
+};
+
+class AdmvAudioProcessorEditor  : public AudioProcessorEditor, public Timer, public MessageListener
 {
 private:
 	
@@ -32,17 +44,23 @@ private:
 	MainLayout mLayout;
 	SpectrometerControl mSpectrometer;
 	TomatlLookAndFeel mLookAndFeel;
+	AdmvAudioProcessor* mParentProcessor;
 
 	void addComponent(int x, int y, Component& ctrl)
 	{
 		addAndMakeVisible(ctrl);
 		ctrl.setTopLeftPosition(x, y);
 	}
-
 public:
-	AdmvAudioProcessorEditor (AdmvAudioProcessor* ownerFilter)
-		: AudioProcessorEditor(ownerFilter), mGonio(ownerFilter), mSpectrometer(ownerFilter)
+	void updateFromState(const AdmvPluginState& state)
 	{
+		mLayout.updateFromState(state);
+	}
+
+	AdmvAudioProcessorEditor (AdmvAudioProcessor* ownerFilter)
+		: AudioProcessorEditor(ownerFilter), mGonio(ownerFilter), mSpectrometer(ownerFilter), mLayout(ownerFilter)
+	{
+		mParentProcessor = ownerFilter;
 		LookAndFeel::setDefaultLookAndFeel(&mLookAndFeel);
 		setSize(mLayout.getWidth(), mLayout.getHeight());
 		addComponent(0, 0, mLayout);
@@ -54,12 +72,36 @@ public:
 
 	~AdmvAudioProcessorEditor()
 	{
+		stopTimer();
+	}
+
+	MainLayout* getMainLayout()
+	{
+		return &mLayout;
+	}
+
+	virtual void handleMessage(const Message& message)
+	{
+		EditorAction& action = reinterpret_cast<EditorAction&>((Message&)message);
+		
+		action.mAction();
+		
 	}
 
 	virtual void timerCallback()
 	{
 		mGonio.repaint();
 		mSpectrometer.repaint();
+		
+		if (mLayout.isShowing())
+		{
+			mLayout.updateInputChannels(mParentProcessor->getCurrentInputCount());
+		}
+	}
+
+	void prepareForSampleRate(size_t sampleRate)
+	{
+		mSpectrometer.prepareForSampleRate(sampleRate);
 	}
 
 	static float logDecay(float alpha)

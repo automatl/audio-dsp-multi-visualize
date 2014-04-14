@@ -24,7 +24,8 @@ private:
 	tomatl::dsp::OctaveScale mFreqScale;
 	tomatl::dsp::LinearScale mMagnitudeScale;
 	tomatl::dsp::Bound2D<double> mBounds;
-	double* mFreqCache;
+	double* mFreqCache = NULL;
+	size_t mSampleRate = 0;
 
 	Image mBuffer;
 public:
@@ -40,35 +41,49 @@ public:
 
 		mBounds.Y.mLow = -72.;
 		mBounds.Y.mHigh = 0.;
+	}
 
-		// TODO: fix possible crashes for sample rates > 96000
-		mFreqCache = new double[48000];
-
-		memset(mFreqCache, 0x0, sizeof(double) * 48000);
+	forcedinline void prepareForSampleRate(size_t sampleRate)
+	{
+		if (mSampleRate != sampleRate)
+		{
+			TOMATL_BRACE_DELETE(mFreqCache);
+			mFreqCache = new double[sampleRate];
+			memset(mFreqCache, 0x0, sizeof(double)* sampleRate);
+		}
 	}
 
 	~SpectrometerControl()
 	{
-		delete mFreqCache;
+		TOMATL_BRACE_DELETE(mFreqCache);
 	}
 
-	int scaleX(double value, size_t binCount, size_t sampleRate)
+	forcedinline int calculateX(double value, size_t binCount, size_t sampleRate)
+	{
+		return mFreqScale.scale(getWidth(), mBounds.X, value * sampleRate / (binCount * 2), true);
+	}
+	
+	forcedinline int scaleX(double value, size_t binCount, size_t sampleRate)
 	{
 		int index = value;
+		
+		if (mFreqCache == NULL)
+		{
+			return calculateX(value, binCount, sampleRate);
+		}
 
 		if (mFreqCache[index] == 0)
 		{
-			value = value * sampleRate / (binCount * 2);
-			mFreqCache[index] = mFreqScale.scale(getWidth(), mBounds.X, value, true);
+			mFreqCache[index] = calculateX(value, binCount, sampleRate);
 		}
 		
 		return mFreqCache[index];
 	}
 
 	// TODO: optimize somehow. maybe get dB values here, and just linearly scale them
-	int scaleY(double value)
+	forcedinline int scaleY(double value)
 	{
-		return getHeight() - mMagnitudeScale.scale(getHeight(), mBounds.Y, 20 * log10(value), true) - 1;
+		return getHeight() - mMagnitudeScale.scale(getHeight(), mBounds.Y, TOMATL_TO_DB(value), true) - 1;
 	}
 
 	void paint(Graphics& g)
@@ -88,6 +103,8 @@ public:
 			{
 				continue;
 			}
+
+			prepareForSampleRate(block.mSampleRate);
 
 			int lastX = -10;
 			Path p;

@@ -22,6 +22,7 @@
 
 //[Headers]     -- You can add your own extra header files here --
 #include "JuceHeader.h"
+#include "PluginProcessor.h"
 //[/Headers]
 
 
@@ -35,29 +36,43 @@
                                                                     //[/Comments]
 */
 class MainLayout  : public Component,
-                    public ButtonListener
+                    public ButtonListener,
+                    public SliderListener
 {
 public:
     //==============================================================================
-    MainLayout ();
+    MainLayout (AdmvAudioProcessor* plugin);
     ~MainLayout();
 
     //==============================================================================
     //[UserMethods]     -- You can add your own custom methods in this section.
+	void updateInputChannels(size_t value) { mInputChannels.get()->setText(String(value), NotificationType::dontSendNotification); }
+
+	void updateFromState(const AdmvPluginState& state)
+	{
+		mGonioManualScale.get()->setToggleState(state.mManualGoniometerScale, NotificationType::dontSendNotification);
+		mGonioScaleValue.get()->setValue(TOMATL_TO_DB(state.mManualGoniometerScaleValue), NotificationType::dontSendNotification);
+		mGonioScaleValue.get()->setEnabled(state.mManualGoniometerScale);
+	}
     //[/UserMethods]
 
     void paint (Graphics& g);
     void resized();
     void buttonClicked (Button* buttonThatWasClicked);
+    void sliderValueChanged (Slider* sliderThatWasMoved);
 
 
 
 private:
     //[UserVariables]   -- You can add your own custom variables in this section.
+	AdmvAudioProcessor* mParentProcessor = NULL;
     //[/UserVariables]
 
     //==============================================================================
     ScopedPointer<TextButton> mTestBtn;
+    ScopedPointer<Label> mInputChannels;
+    ScopedPointer<ToggleButton> mGonioManualScale;
+    ScopedPointer<Slider> mGonioScaleValue;
 
 
     //==============================================================================

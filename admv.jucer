@@ -12,6 +12,7 @@
               jucerVersion="3.1.0">
   <MAINGROUP id="vsKEio" name="admv">
     <GROUP id="{3637573F-C1BE-6161-8382-C418FF0617B2}" name="Source">
+      <FILE id="RmvgAU" name="PluginState.h" compile="0" resource="0" file="Source/PluginState.h"/>
       <FILE id="oNqnTg" name="TomatlImageType.h" compile="0" resource="0"
             file="Source/TomatlImageType.h"/>
       <FILE id="FHS0hP" name="TomatlLookAndFeel.h" compile="0" resource="0"
@@ -26,8 +27,6 @@
             file="Source/PluginProcessor.cpp"/>
       <FILE id="BeFhBx" name="PluginProcessor.h" compile="0" resource="0"
             file="Source/PluginProcessor.h"/>
-      <FILE id="cxpZfo" name="PluginEditor.cpp" compile="1" resource="0"
-            file="Source/PluginEditor.cpp"/>
       <FILE id="LvkcSw" name="PluginEditor.h" compile="0" resource="0" file="Source/PluginEditor.h"/>
     </GROUP>
   </MAINGROUP>

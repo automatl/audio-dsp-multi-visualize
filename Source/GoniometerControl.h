@@ -3,7 +3,7 @@
 
 #include "../JuceLibraryCode/JuceHeader.h"
 #include "TomatlImageType.h"
-
+#include "dsp-utility.h"
 //==============================================================================
 /*
 */
@@ -89,8 +89,8 @@ public:
 				continue;
 			}
 
-			double x = (segment.mData[0].first + 1.) * getWidth() / 2.;
-			double y = (segment.mData[0].second + 1.) * getHeight() / 2.;
+			double x = TOMATL_BOUND_VALUE((int)((segment.mData[0].first + 1.) * getWidth() / 2.), 0, getWidth() - 1);
+			double y = TOMATL_BOUND_VALUE((int)((segment.mData[0].second + 1.) * getHeight() / 2.), 0, getHeight() - 1);
 
 			p.startNewSubPath(x, y);
 
@@ -100,8 +100,8 @@ public:
 
 			for (int i = 1; i < segment.mLength - 1; ++i)
 			{
-				double x = (segment.mData[i].first + 1.) * getWidth() / 2.;
-				double y = (segment.mData[i].second + 1.) * getHeight() / 2.;
+				double x = TOMATL_BOUND_VALUE((segment.mData[i].first + 1.) * getWidth() / 2., 0., getWidth() - 1.);
+				double y = TOMATL_BOUND_VALUE((segment.mData[i].second + 1.) * getHeight() / 2., 0., getHeight() - 1.);
 
 				std::pair<double, double> prev = points[points.size() - 1];
 

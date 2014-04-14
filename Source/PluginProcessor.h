@@ -14,16 +14,20 @@
 #include "../JuceLibraryCode/JuceHeader.h"
 #include "dsp-utility.h"
 #include "GonioPoints.h"
+#include "PluginState.h"
 #include <vector>
 #include <stack>
 //==============================================================================
 /**
 */
+
+#define TOMATL_PLUGIN_SET_PROPERTY(name, value) mState.##name = value; makeCurrentStateEffective()
+
 class AdmvAudioProcessor  : public AudioProcessor
 {
 public:
-	tomatl::dsp::SpectrumBlock* mSpectroSegments;
-	GonioPoints<double>* mGonioSegments;
+	tomatl::dsp::SpectrumBlock* mSpectroSegments = NULL;
+	GonioPoints<double>* mGonioSegments = NULL;
 	//==============================================================================
 	AdmvAudioProcessor();
 	~AdmvAudioProcessor();
@@ -66,20 +70,58 @@ public:
 	const String getProgramName (int index);
 	void changeProgramName (int index, const String& newName);
 
+	const AdmvPluginState& getState() { return mState; }
+
+	void setManualGonioScaleEnabled(bool value) { TOMATL_PLUGIN_SET_PROPERTY(mManualGoniometerScale, value); }
+	void setManualGonioScaleValue(double value) { TOMATL_PLUGIN_SET_PROPERTY(mManualGoniometerScaleValue, value); }
+
 	//==============================================================================
 	void getStateInformation (MemoryBlock& destData);
 	void setStateInformation (const void* data, int sizeInBytes);
 	virtual void numChannelsChanged();
 
-	Colour getStereoPairColor(int index) { return Colour::fromString("aa4ae329"); }
+	size_t getCurrentInputCount() { return mCurrentInputCount; }
+
+	Colour getStereoPairColor(int index) 
+	{ 
+		/*0x4ae329,
+			0x3192e7,
+			0xc628e7,
+			0x5218f7,
+			0xc6ff18,
+			0xf72021*/
+		// TODO: store collection and return const references
+		if (index == 0)
+		{
+			return Colour::fromString("ff4ae329");
+		}
+		else if (index == 1)
+		{
+			return Colour::fromString("ff3192e7");
+		}
+		else if (index = 2)
+		{
+			return Colour::fromString("ffc628e7");
+		}
+		else if (index = 3)
+		{
+			return Colour::fromString("ff5218f7");
+		}
+		else
+		{
+			return Colour::fromString("ffc6ff18");
+		}
+	}
 	size_t getMaxStereoPairCount() { return mMaxStereoPairCount; }
 private:
 	std::vector<tomatl::dsp::GonioCalculator<double>*> mGonioCalcs;
 	std::vector<tomatl::dsp::SpectroCalculator<double>*> mSpectroCalcs;
-	size_t mMaxStereoPairCount;
+	size_t mMaxStereoPairCount = 0;
+	size_t mCurrentInputCount = 0;
+	AdmvPluginState mState;
 	
-	
-	
+	void makeCurrentStateEffective();
+
 	//==============================================================================
 	JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (AdmvAudioProcessor)
 };

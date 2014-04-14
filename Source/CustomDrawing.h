@@ -164,7 +164,12 @@ public:
 
 	// TODO: optimize
 	static inline void _dla_plot(Image::BitmapData& pixels, int x, int y, ColorARGB& col, float br) noexcept
-	{	
+	{
+		if (x < 0 || x >= pixels.width || y < 0 || y >= pixels.height)
+		{
+			return;
+		}
+
 		uint8* pixel = pixels.getPixelPointer(x, y);
 
 		for (int i = 0; i < 3; ++i)
