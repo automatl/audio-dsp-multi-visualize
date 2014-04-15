@@ -46,10 +46,11 @@ private:
 	TomatlLookAndFeel mLookAndFeel;
 	AdmvAudioProcessor* mParentProcessor;
 
-	void addComponent(int x, int y, Component& ctrl)
+	void addComponent(juce::Rectangle<int> bounds, ILateInitComponent& ctrl)
 	{
 		addAndMakeVisible(ctrl);
-		ctrl.setTopLeftPosition(x, y);
+		ctrl.setTopLeftPosition(bounds.getTopLeft().getX(), bounds.getTopLeft().getY());
+		ctrl.init(bounds);
 	}
 public:
 	void updateFromState(const AdmvPluginState& state)
@@ -62,10 +63,14 @@ public:
 	{
 		mParentProcessor = ownerFilter;
 		LookAndFeel::setDefaultLookAndFeel(&mLookAndFeel);
+
 		setSize(mLayout.getWidth(), mLayout.getHeight());
-		addComponent(0, 0, mLayout);
-		addComponent(0, 0, mGonio);
-		addComponent(mGonio.getWidth(), 0, mSpectrometer);
+
+		addAndMakeVisible(mLayout);
+		mLayout.setTopLeftPosition(0, 0);
+
+		addComponent(mLayout.getGonioRectangle(), mGonio);
+		addComponent(mLayout.getSpectroRectangle(), mSpectrometer);
 
 		startTimer(1000. / 25.);
 	}
@@ -75,9 +80,9 @@ public:
 		stopTimer();
 	}
 
-	MainLayout* getMainLayout()
+	const MainLayout& getMainLayout()
 	{
-		return &mLayout;
+		return mLayout;
 	}
 
 	virtual void handleMessage(const Message& message)
@@ -96,6 +101,11 @@ public:
 		if (mLayout.isShowing())
 		{
 			mLayout.updateInputChannels(mParentProcessor->getCurrentInputCount());
+
+			if (!mParentProcessor->getState().mManualGoniometerScale)
+			{
+				mLayout.updateGonioScale(mParentProcessor->mLastGonioScale);
+			}
 		}
 	}
 

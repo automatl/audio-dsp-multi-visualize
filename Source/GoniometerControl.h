@@ -4,10 +4,11 @@
 #include "../JuceLibraryCode/JuceHeader.h"
 #include "TomatlImageType.h"
 #include "dsp-utility.h"
+#include "ILateInitComponent.h"
 //==============================================================================
 /*
 */
-class GoniometerControl : public Component
+class GoniometerControl : public ILateInitComponent
 {
 private:
 	Image mContent;
@@ -17,7 +18,7 @@ private:
 	void initLayers()
 	{
 		Graphics buffer(mContent);
-		buffer.setColour(Colours::transparentBlack);
+		buffer.setColour(Colour::fromString("FF101010"));
 		buffer.fillAll();
 
 		float sqrt2 = std::sqrt(2);
@@ -33,7 +34,7 @@ private:
 
 		Graphics background(mBackground);
 		background.setImageResamplingQuality(Graphics::ResamplingQuality::highResamplingQuality);
-		background.setColour(Colours::black);
+		background.setColour(Colour::fromString("FF101010"));
 		background.fillAll();
 		background.setColour(Colour::fromString("FF202020"));
 		background.drawEllipse(0., 0., getWidth(), getHeight(), 1.5);
@@ -41,8 +42,24 @@ private:
 		
 		background.drawLine(leftDiag);
 		background.drawLine(rightDiag);
+		background.setColour(Colours::darkgrey);
+		background.drawRect(getLocalBounds(), 2.f);
+		background.setColour(Colours::black);
+		background.drawRect(getLocalBounds().expanded(-1.), 1.f);
 	}
 public:
+
+	virtual void init(juce::Rectangle<int> bounds)
+	{
+		setOpaque(true);
+		setPaintingIsUnclipped(false);
+		setSize(bounds.getWidth(), bounds.getHeight());
+		mContent = Image(Image::ARGB, getWidth(), getHeight(), true);
+		mBackground = Image(Image::RGB, getWidth(), getHeight(), true, TomatlImageType());
+
+
+		initLayers();
+	}
 
 	template <typename T> Point<T> movePoint(Point<T> source, T x, T y)
 	{
@@ -55,14 +72,9 @@ public:
 
 	GoniometerControl(AdmvAudioProcessor* parentPlugin)
 	{
-		setOpaque(true);
-		setPaintingIsUnclipped(false);
-		setSize(400, 400);
-		mContent = Image(Image::ARGB, getWidth(), getHeight(), true);
-		mBackground = Image(Image::RGB, getWidth(), getHeight(), true, TomatlImageType());
 		mParentProcessor = parentPlugin;
+
 		
-		initLayers();
 		
 	}
 

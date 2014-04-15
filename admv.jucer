@@ -12,6 +12,12 @@
               jucerVersion="3.1.0">
   <MAINGROUP id="vsKEio" name="admv">
     <GROUP id="{3637573F-C1BE-6161-8382-C418FF0617B2}" name="Source">
+      <GROUP id="{4A507273-FCB2-DED6-7553-5B41AC7C584D}" name="img">
+        <FILE id="Lr7BBJ" name="check_false.png" compile="0" resource="1" file="Source/img/check_false.png"/>
+        <FILE id="f9apSQ" name="check_true.png" compile="0" resource="1" file="Source/img/check_true.png"/>
+      </GROUP>
+      <FILE id="Mh4kvL" name="ILateInitComponent.h" compile="0" resource="0"
+            file="Source/ILateInitComponent.h"/>
       <FILE id="RmvgAU" name="PluginState.h" compile="0" resource="0" file="Source/PluginState.h"/>
       <FILE id="oNqnTg" name="TomatlImageType.h" compile="0" resource="0"
             file="Source/TomatlImageType.h"/>

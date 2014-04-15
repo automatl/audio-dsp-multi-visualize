@@ -13,11 +13,13 @@
 
 #include "../JuceLibraryCode/JuceHeader.h"
 #include "TomatlImageType.h"
+#include "ILateInitComponent.h"
 
 //==============================================================================
 /*
 */
-class SpectrometerControl    : public Component
+
+class SpectrometerControl : public ILateInitComponent
 {
 private:
 	AdmvAudioProcessor* mParentProcessor;
@@ -31,13 +33,21 @@ private:
 public:
 	SpectrometerControl(AdmvAudioProcessor* parent)
 	{
-		setSize(600, 400);
-		mBuffer = Image(Image::PixelFormat::RGB, getWidth(), getHeight(), true, TomatlImageType());
 		mParentProcessor = parent;
+	}
+
+	virtual void init(juce::Rectangle<int> bounds)
+	{
+		//setSize(editor->getMainLayout().getSpectroRectangle().getBottomRight().getX(), editor->getMainLayout().getSpectroRectangle().getBottomRight().getY());
+		//setSize(600 - 32, 400);
+
+		setSize(bounds.getWidth(), bounds.getHeight());
+		mBuffer = Image(Image::PixelFormat::RGB, getWidth(), getHeight(), true, TomatlImageType());
+		
 		setOpaque(true);
 		this->setPaintingIsUnclipped(true);
 		mBounds.X.mLow = 20.;
-		mBounds.X.mHigh = 22000.;
+		mBounds.X.mHigh = 30000.;
 
 		mBounds.Y.mLow = -72.;
 		mBounds.Y.mHigh = 0.;
@@ -88,6 +98,9 @@ public:
 
 	void paint(Graphics& g)
 	{
+		mBounds.Y.mLow = mParentProcessor->getState().mSpectrometerMagnitudeScale.first;
+		mBounds.Y.mHigh = mParentProcessor->getState().mSpectrometerMagnitudeScale.second;
+
 		Graphics buffer(mBuffer);
 
 		std::vector<std::pair<Path, int>> paths;
@@ -142,11 +155,14 @@ public:
 		Image::BitmapData pixels(mBuffer, Image::BitmapData::ReadWriteMode::readWrite);
 
 		// This is buffer.fillAll(Colours::black);
-		for (int i = 0; i < pixels.height; ++i)
+
+		buffer.fillAll(Colour::fromString("FF101010"));
+
+		/*for (int i = 0; i < pixels.height; ++i)
 		{
 			uint8* src = pixels.getLinePointer(i);
 			memset(src, 0x0, pixels.width * pixels.pixelStride);
-		}
+		}*/
 
 		for (int i = 0; i < paths.size(); ++i)
 		{
@@ -160,6 +176,10 @@ public:
 		}
 		
 		g.drawImageAt(mBuffer, 0, 0, false);
+		g.setColour(Colours::darkgrey);
+		g.drawRect(getLocalBounds(), 2.f);
+		g.setColour(Colours::black);
+		g.drawRect(getLocalBounds().expanded(-1.), 1.f);
 	}
 
 	void resized()

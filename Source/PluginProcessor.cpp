@@ -133,7 +133,7 @@ void AdmvAudioProcessor::prepareToPlay (double sampleRate, int samplesPerBlock)
 
 	// Because fft bin magnitude would change every (sampleRate / fftSize), so its sample rate is not equal to signal sample rate!
 	spectroCalcAttackRelease.first = tomatl::dsp::EnvelopeWalker::calculateCoeff(100, sampleRate / fftSize);
-	spectroCalcAttackRelease.second = tomatl::dsp::EnvelopeWalker::calculateCoeff(700, sampleRate / fftSize);
+	spectroCalcAttackRelease.second = tomatl::dsp::EnvelopeWalker::calculateCoeff(900, sampleRate / fftSize);
 
 	mMaxStereoPairCount = JucePlugin_MaxNumInputChannels / 2;
 
@@ -206,6 +206,7 @@ void AdmvAudioProcessor::processBlock (AudioSampleBuffer& buffer, MidiBuffer& mi
 			if (res != NULL && getActiveEditor() != NULL)
 			{
 				mGonioSegments[channel / 2] = GonioPoints<double>(res, mGonioCalcs[channel / 2]->getSegmentLength(), channel / 2, sampleRate);
+				mLastGonioScale = mGonioCalcs[channel / 2]->getCurrentScaleValue();
 			}
 
 			if (spectroResult.mLength > 0 && getActiveEditor() != NULL)
@@ -263,15 +264,23 @@ AudioProcessorEditor* AdmvAudioProcessor::createEditor()
 //==============================================================================
 void AdmvAudioProcessor::getStateInformation (MemoryBlock& destData)
 {
-	// You should use this method to store your parameters in the memory block.
-	// You could do that either as raw data, or use the XML or ValueTree classes
-	// as intermediaries to make it easy to save and load complex data.
+	uint8 version = getStateVersion();
+
+	destData.ensureSize(sizeof(mState) + 1, false);
+	destData.copyFrom(&version, 0, 1);
+	destData.copyFrom(&mState, 1, sizeof(mState));
 }
 
 void AdmvAudioProcessor::setStateInformation (const void* data, int sizeInBytes)
 {
-	// You should use this method to restore your parameters from this memory block,
-	// whose contents will have been created by the getStateInformation() call.
+	uint8 version;
+
+	memcpy(&version, data, 1);
+
+	if (version == getStateVersion())
+	{
+		memcpy(&mState, (uint8*)data + 1, sizeInBytes - 1);
+	}
 }
 
 //==============================================================================

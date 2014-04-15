@@ -74,6 +74,7 @@ public:
 
 	void setManualGonioScaleEnabled(bool value) { TOMATL_PLUGIN_SET_PROPERTY(mManualGoniometerScale, value); }
 	void setManualGonioScaleValue(double value) { TOMATL_PLUGIN_SET_PROPERTY(mManualGoniometerScaleValue, value); }
+	void setSpectroMagnitudeScale(std::pair<double, double> value) { TOMATL_PLUGIN_SET_PROPERTY(mSpectrometerMagnitudeScale, value); }
 
 	//==============================================================================
 	void getStateInformation (MemoryBlock& destData);
@@ -113,6 +114,9 @@ public:
 		}
 	}
 	size_t getMaxStereoPairCount() { return mMaxStereoPairCount; }
+
+	double mLastGonioScale = 1.0;
+
 private:
 	std::vector<tomatl::dsp::GonioCalculator<double>*> mGonioCalcs;
 	std::vector<tomatl::dsp::SpectroCalculator<double>*> mSpectroCalcs;
@@ -121,6 +125,11 @@ private:
 	AdmvPluginState mState;
 	
 	void makeCurrentStateEffective();
+
+	uint8 getStateVersion()
+	{
+		return 2;
+	}
 
 	//==============================================================================
 	JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (AdmvAudioProcessor)

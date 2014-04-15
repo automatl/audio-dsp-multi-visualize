@@ -23,6 +23,7 @@
 //[Headers]     -- You can add your own extra header files here --
 #include "JuceHeader.h"
 #include "PluginProcessor.h"
+#include "TomatlLookAndFeel.h"
 //[/Headers]
 
 
@@ -37,7 +38,8 @@
 */
 class MainLayout  : public Component,
                     public ButtonListener,
-                    public SliderListener
+                    public SliderListener,
+                    public LabelListener
 {
 public:
     //==============================================================================
@@ -53,6 +55,23 @@ public:
 		mGonioManualScale.get()->setToggleState(state.mManualGoniometerScale, NotificationType::dontSendNotification);
 		mGonioScaleValue.get()->setValue(TOMATL_TO_DB(state.mManualGoniometerScaleValue), NotificationType::dontSendNotification);
 		mGonioScaleValue.get()->setEnabled(state.mManualGoniometerScale);
+		mSpectroMagnitudeScale.get()->setMinValue(state.mSpectrometerMagnitudeScale.first, NotificationType::dontSendNotification);
+		mSpectroMagnitudeScale.get()->setMaxValue(state.mSpectrometerMagnitudeScale.second, NotificationType::dontSendNotification);
+	}
+
+	juce::Rectangle<int> getGonioRectangle()
+	{
+		return mGonioPlaceholder.get()->getBoundsInParent();
+	}
+
+	juce::Rectangle<int> getSpectroRectangle()
+	{
+		return mSpectroPlaceholder.get()->getBoundsInParent();
+	}
+
+	void updateGonioScale(double scale)
+	{
+		mGonioScaleValue.get()->setValue(TOMATL_TO_DB(1. / scale), NotificationType::dontSendNotification);
 	}
     //[/UserMethods]
 
@@ -60,6 +79,7 @@ public:
     void resized();
     void buttonClicked (Button* buttonThatWasClicked);
     void sliderValueChanged (Slider* sliderThatWasMoved);
+    void labelTextChanged (Label* labelThatHasChanged);
 
 
 
@@ -69,10 +89,14 @@ private:
     //[/UserVariables]
 
     //==============================================================================
-    ScopedPointer<TextButton> mTestBtn;
     ScopedPointer<Label> mInputChannels;
     ScopedPointer<ToggleButton> mGonioManualScale;
     ScopedPointer<Slider> mGonioScaleValue;
+    ScopedPointer<Slider> mSpectroMagnitudeScale;
+    ScopedPointer<Label> mGonioPlaceholder;
+    ScopedPointer<Label> mSpectroPlaceholder;
+    ScopedPointer<Label> mChcLabel;
+    ScopedPointer<TextButton> mDoNothing;
 
 
     //==============================================================================
