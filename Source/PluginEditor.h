@@ -111,7 +111,7 @@ public:
 
 	void prepareForSampleRate(size_t sampleRate)
 	{
-		mSpectrometer.prepareForSampleRate(sampleRate);
+		//mSpectrometer.prepareForSampleRate(sampleRate);
 	}
 
 	static float logDecay(float alpha)

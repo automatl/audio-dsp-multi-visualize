@@ -75,6 +75,7 @@ public:
 	void setManualGonioScaleEnabled(bool value) { TOMATL_PLUGIN_SET_PROPERTY(mManualGoniometerScale, value); }
 	void setManualGonioScaleValue(double value) { TOMATL_PLUGIN_SET_PROPERTY(mManualGoniometerScaleValue, value); }
 	void setSpectroMagnitudeScale(std::pair<double, double> value) { TOMATL_PLUGIN_SET_PROPERTY(mSpectrometerMagnitudeScale, value); }
+	void setSpectroFrequencyScale(std::pair<double, double> value) { TOMATL_PLUGIN_SET_PROPERTY(mSpectrometerFrequencyScale, value); }
 
 	//==============================================================================
 	void getStateInformation (MemoryBlock& destData);
@@ -128,7 +129,7 @@ private:
 
 	uint8 getStateVersion()
 	{
-		return 2;
+		return 3;
 	}
 
 	//==============================================================================

@@ -23,90 +23,53 @@ class SpectrometerControl : public ILateInitComponent
 {
 private:
 	AdmvAudioProcessor* mParentProcessor;
-	tomatl::dsp::OctaveScale mFreqScale;
-	tomatl::dsp::LinearScale mMagnitudeScale;
-	tomatl::dsp::Bound2D<double> mBounds;
-	double* mFreqCache = NULL;
-	size_t mSampleRate = 0;
-
+	tomatl::dsp::FrequencyDomainGrid mFreqGrid;
+	size_t mRightBorder = 10;
+	size_t mBottomBorder = 16;
 	Image mBuffer;
 public:
-	SpectrometerControl(AdmvAudioProcessor* parent)
+	SpectrometerControl(AdmvAudioProcessor* parent) : mFreqGrid(tomatl::dsp::Bound2D<double>(20., 30000., -72., 0.))
 	{
 		mParentProcessor = parent;
 	}
 
 	virtual void init(juce::Rectangle<int> bounds)
 	{
-		//setSize(editor->getMainLayout().getSpectroRectangle().getBottomRight().getX(), editor->getMainLayout().getSpectroRectangle().getBottomRight().getY());
-		//setSize(600 - 32, 400);
-
 		setSize(bounds.getWidth(), bounds.getHeight());
 		mBuffer = Image(Image::PixelFormat::RGB, getWidth(), getHeight(), true, TomatlImageType());
 		
 		setOpaque(true);
-		this->setPaintingIsUnclipped(true);
-		mBounds.X.mLow = 20.;
-		mBounds.X.mHigh = 30000.;
+		setPaintingIsUnclipped(true);
 
-		mBounds.Y.mLow = -72.;
-		mBounds.Y.mHigh = 0.;
-	}
-
-	forcedinline void prepareForSampleRate(size_t sampleRate)
-	{
-		if (mSampleRate != sampleRate)
-		{
-			TOMATL_BRACE_DELETE(mFreqCache);
-			mFreqCache = new double[sampleRate];
-			memset(mFreqCache, 0x0, sizeof(double)* sampleRate);
-		}
+		mFreqGrid.updateSize(getWidth() - mRightBorder, getHeight() - mBottomBorder);
 	}
 
 	~SpectrometerControl()
 	{
-		TOMATL_BRACE_DELETE(mFreqCache);
 	}
 
-	forcedinline int calculateX(double value, size_t binCount, size_t sampleRate)
+	forcedinline void fillBoundsFromState(const AdmvPluginState& state, tomatl::dsp::Bound2D<double>& subject)
 	{
-		return mFreqScale.scale(getWidth(), mBounds.X, value * sampleRate / (binCount * 2), true);
-	}
-	
-	forcedinline int scaleX(double value, size_t binCount, size_t sampleRate)
-	{
-		int index = value;
-		
-		if (mFreqCache == NULL)
-		{
-			return calculateX(value, binCount, sampleRate);
-		}
+		subject.X.mLow = mFreqGrid.fullScaleXToFreq(mFreqGrid.getWidth() / 100. * state.mSpectrometerFrequencyScale.first);
+		subject.X.mHigh = mFreqGrid.fullScaleXToFreq(mFreqGrid.getWidth() / 100. * state.mSpectrometerFrequencyScale.second);
 
-		if (mFreqCache[index] == 0)
-		{
-			mFreqCache[index] = calculateX(value, binCount, sampleRate);
-		}
-		
-		return mFreqCache[index];
-	}
-
-	// TODO: optimize somehow. maybe get dB values here, and just linearly scale them
-	forcedinline int scaleY(double value)
-	{
-		return getHeight() - mMagnitudeScale.scale(getHeight(), mBounds.Y, TOMATL_TO_DB(value), true) - 1;
+		subject.Y.mLow = mFreqGrid.fullScaleYToDb(mFreqGrid.getHeight() - mFreqGrid.getHeight() / 100. * state.mSpectrometerMagnitudeScale.first);
+		subject.Y.mHigh = mFreqGrid.fullScaleYToDb(mFreqGrid.getHeight() - mFreqGrid.getHeight() / 100. * state.mSpectrometerMagnitudeScale.second);
 	}
 
 	void paint(Graphics& g)
 	{
-		mBounds.Y.mLow = mParentProcessor->getState().mSpectrometerMagnitudeScale.first;
-		mBounds.Y.mHigh = mParentProcessor->getState().mSpectrometerMagnitudeScale.second;
+		
+		// Zoom viewport if requested
+		tomatl::dsp::Bound2D<double> bounds;
+		fillBoundsFromState(mParentProcessor->getState(), bounds);
+		mFreqGrid.updateBounds(bounds);
 
 		Graphics buffer(mBuffer);
 
 		std::vector<std::pair<Path, int>> paths;
 
 		LowLevelGraphicsSoftwareRenderer& c = dynamic_cast<LowLevelGraphicsSoftwareRenderer&>(g.getInternalContext());
-		//Image* img = c.getImage();
 		
 		for (int pn = 0; pn < mParentProcessor->getMaxStereoPairCount(); ++pn)
 		{
@@ -117,25 +80,45 @@ public:
 				continue;
 			}
 
-			prepareForSampleRate(block.mSampleRate);
+			mFreqGrid.updateSampleRate(block.mSampleRate);
+			mFreqGrid.updateBinCount(block.mLength);
 
-			int lastX = -10;
+			int lastX = 0;
+			int lastY = 0;
+
 			Path p;
-			p.startNewSubPath(0, getHeight() - 1);
+			p.startNewSubPath(0, mFreqGrid.getHeight() - 1);
+
+			bool firstSignificantPointAdded = false;
 			
 			for (int i = 0; i < block.mLength - 1; i += 2)
 			{
-				int x0 = scaleX(block.mData[i + 0].first, block.mLength, block.mSampleRate);
-				int y0 = scaleY(block.mData[i + 0].second);
+				double f0 = mFreqGrid.binNumberToFrequency(block.mData[i + 0].first);
+				int x0 = mFreqGrid.freqToX(f0);
+				int y0 = mFreqGrid.dbToY(TOMATL_TO_DB(block.mData[i + 0].second));
 
-				int x1 = scaleX(block.mData[i + 1].first, block.mLength, block.mSampleRate);
-				int y1 = scaleY(block.mData[i + 1].second);
+				double f1 = mFreqGrid.binNumberToFrequency(block.mData[i + 1].first);
+				int x1 = mFreqGrid.freqToX(f1);
+				int y1 = mFreqGrid.dbToY(TOMATL_TO_DB(block.mData[i + 1].second));
+
+				if (!mFreqGrid.isFrequencyVisible(f0) && !mFreqGrid.isFrequencyVisible(f1))
+				{
+					continue;
+				}
+
+				if (!firstSignificantPointAdded)
+				{
+					p.lineTo(mFreqGrid.freqToX(mFreqGrid.binNumberToFrequency(0)), y0);
+
+					firstSignificantPointAdded = true;
+				}
 
 				if (x0 - lastX > 5)
 				{
 					p.quadraticTo(x0, y0, x1, y1);
 
 					lastX = x1;
+					lastY = y1;
 				}
 				else if (x0 - lastX > 1)
 				{
@@ -143,26 +126,20 @@ public:
 					p.lineTo(x1, y1);
 					
 					lastX = x1;
+					lastY = y1;
 				}
 			}
 
-			p.lineTo(getWidth(), getHeight() - 1);
-			p.lineTo(0, getHeight() - 1);
+			p.lineTo(mFreqGrid.getWidth(), p.getCurrentPosition().getY());
+			p.lineTo(mFreqGrid.getWidth(), mFreqGrid.getHeight() - 1);
+			p.lineTo(0, mFreqGrid.getHeight() - 1);
 
 			paths.push_back(std::pair<Path, int>(p, block.mIndex));
 		}
 
 		Image::BitmapData pixels(mBuffer, Image::BitmapData::ReadWriteMode::readWrite);
 
-		// This is buffer.fillAll(Colours::black);
-
 		buffer.fillAll(Colour::fromString("FF101010"));
-
-		/*for (int i = 0; i < pixels.height; ++i)
-		{
-			uint8* src = pixels.getLinePointer(i);
-			memset(src, 0x0, pixels.width * pixels.pixelStride);
-		}*/
 
 		for (int i = 0; i < paths.size(); ++i)
 		{
@@ -178,6 +155,36 @@ public:
 		g.drawImageAt(mBuffer, 0, 0, false);
 		g.setColour(Colours::darkgrey);
 		g.drawRect(getLocalBounds(), 2.f);
+		
+		g.setColour(Colours::darkgrey.withAlpha(0.3f));
+		for (int i = 0; i < mFreqGrid.getFreqLineCount(); ++i)
+		{
+			auto line = mFreqGrid.getFreqLine(i);
+
+			g.setColour(Colours::darkgrey.withAlpha(0.3f));
+			g.drawLine(line.mLocation, 0, line.mLocation, mFreqGrid.getHeight());
+
+			if (line.mLocation > 0)
+			{
+				g.setColour(LookAndFeel::getDefaultLookAndFeel().findColour(TomatlLookAndFeel::alternativeText1).withAlpha(0.6f));
+				g.drawText(juce::String(line.mCaption.c_str()), juce::Rectangle<float>(line.mLocation - 12, mFreqGrid.getHeight(), 24, mBottomBorder), Justification::centred, false);
+			}
+		}
+
+		for (int i = 0; i < mFreqGrid.getAmplLineCount(); ++i)
+		{
+			auto line = mFreqGrid.getAmplLine(i);
+
+			g.setColour(Colours::darkgrey.withAlpha(0.3f));
+			g.drawLine(juce::Line<float>(0, line.mLocation, mFreqGrid.getWidth(), line.mLocation));
+
+			if (line.mLocation + 1 < mFreqGrid.getHeight())
+			{
+				g.setColour(LookAndFeel::getDefaultLookAndFeel().findColour(TomatlLookAndFeel::alternativeText1).withAlpha(0.6f));
+				g.drawText(juce::String(line.mCaption.c_str()), juce::Rectangle<float>(mFreqGrid.getWidth() - 14, line.mLocation - 8, 30, 14), Justification::centredLeft, false);
+			}
+		}
+
 		g.setColour(Colours::black);
 		g.drawRect(getLocalBounds().expanded(-1.), 1.f);
 	}

@@ -85,7 +85,7 @@ public:
 	void paint (Graphics& g)
 	{
 		Graphics buffer(mContent);
-
+		
 		Image::BitmapData pixels(mContent, Image::BitmapData::ReadWriteMode::readWrite);
 
 		// TODO: split to several smaller methods

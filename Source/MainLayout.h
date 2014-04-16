@@ -57,6 +57,7 @@ public:
 		mGonioScaleValue.get()->setEnabled(state.mManualGoniometerScale);
 		mSpectroMagnitudeScale.get()->setMinValue(state.mSpectrometerMagnitudeScale.first, NotificationType::dontSendNotification);
 		mSpectroMagnitudeScale.get()->setMaxValue(state.mSpectrometerMagnitudeScale.second, NotificationType::dontSendNotification);
+		mSpectroFreqScale.get()->setMinAndMaxValues(state.mSpectrometerFrequencyScale.first, state.mSpectrometerFrequencyScale.second, NotificationType::dontSendNotification);
 	}
 
 	juce::Rectangle<int> getGonioRectangle()
@@ -97,6 +98,7 @@ private:
     ScopedPointer<Label> mSpectroPlaceholder;
     ScopedPointer<Label> mChcLabel;
     ScopedPointer<TextButton> mDoNothing;
+    ScopedPointer<Slider> mSpectroFreqScale;
 
 
     //==============================================================================

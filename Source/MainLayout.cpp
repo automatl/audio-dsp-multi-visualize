@@ -84,6 +84,12 @@ MainLayout::MainLayout (AdmvAudioProcessor* plugin)
     addAndMakeVisible (mDoNothing = new TextButton ("Do Nothing"));
     mDoNothing->addListener (this);
 
+    addAndMakeVisible (mSpectroFreqScale = new Slider ("Spectrum Frequency Scale"));
+    mSpectroFreqScale->setRange (20, 30000, 0);
+    mSpectroFreqScale->setSliderStyle (Slider::TwoValueHorizontal);
+    mSpectroFreqScale->setTextBoxStyle (Slider::NoTextBox, false, 80, 20);
+    mSpectroFreqScale->addListener (this);
+
 
     //[UserPreSize]
 	mParentProcessor = plugin;
@@ -124,6 +130,7 @@ MainLayout::~MainLayout()
     mSpectroPlaceholder = nullptr;
     mChcLabel = nullptr;
     mDoNothing = nullptr;
+    mSpectroFreqScale = nullptr;
 
 
     //[Destructor]. You can add your own custom destruction code here..
@@ -152,8 +159,11 @@ void MainLayout::resized()
     mGonioPlaceholder->setBounds (9, 9, 342, 342);
     mSpectroPlaceholder->setBounds (383, 9, 568, 342);
     mChcLabel->setBounds (9, 424, 112, 24);
-    mDoNothing->setBounds (210, 368, 150, 24);
+    mDoNothing->setBounds (202, 368, 150, 24);
+    mSpectroFreqScale->setBounds (375, 355, 586, 24);
     //[UserResized] Add your own custom resize handling here..
+	mSpectroFreqScale->setRange(0, 100); // simple percentage here, all scaling is handling by the client
+	mSpectroMagnitudeScale->setRange(0, 100);
     //[/UserResized]
 }
 
@@ -194,6 +204,12 @@ void MainLayout::sliderValueChanged (Slider* sliderThatWasMoved)
         //[UserSliderCode_mSpectroMagnitudeScale] -- add your slider handling code here..
 		mParentProcessor->setSpectroMagnitudeScale(std::pair<double, double>(sliderThatWasMoved->getMinValue(), sliderThatWasMoved->getMaxValue()));
         //[/UserSliderCode_mSpectroMagnitudeScale]
+    }
+    else if (sliderThatWasMoved == mSpectroFreqScale)
+    {
+        //[UserSliderCode_mSpectroFreqScale] -- add your slider handling code here..
+		mParentProcessor->setSpectroFrequencyScale(std::pair<double, double>(sliderThatWasMoved->getMinValue(), sliderThatWasMoved->getMaxValue()));
+        //[/UserSliderCode_mSpectroFreqScale]
     }
 
     //[UsersliderValueChanged_Post]
@@ -267,8 +283,12 @@ BEGIN_JUCER_METADATA
          editableDoubleClick="1" focusDiscardsChanges="0" fontname="Default font"
          fontsize="15" bold="0" italic="0" justification="33"/>
   <TEXTBUTTON name="Do Nothing" id="3fdb35449265341e" memberName="mDoNothing"
-              virtualName="" explicitFocusOrder="0" pos="210 368 150 24" buttonText="Do Nothing"
+              virtualName="" explicitFocusOrder="0" pos="202 368 150 24" buttonText="Do Nothing"
               connectedEdges="0" needsCallback="1" radioGroupId="0"/>
+  <SLIDER name="Spectrum Frequency Scale" id="fea54c0326f58da2" memberName="mSpectroFreqScale"
+          virtualName="" explicitFocusOrder="0" pos="375 355 586 24" min="20"
+          max="30000" int="0" style="TwoValueHorizontal" textBoxPos="NoTextBox"
+          textBoxEditable="1" textBoxWidth="80" textBoxHeight="20" skewFactor="1"/>
 </JUCER_COMPONENT>
 
 END_JUCER_METADATA

@@ -5,6 +5,8 @@
 
 class TomatlLookAndFeel : public LookAndFeel_V3
 {
+private:
+	const size_t mSliderWidth = 12;
 public:
 	enum TomatlColorIds
 	{
@@ -14,19 +16,24 @@ public:
 		controlBackground,
 		activeBackground,
 		toggledBackground,
-		disabledText
+		disabledText,
+		backgroundText,
+		alternativeText1,
+		alternativeText2,
 	};
 
 	TomatlLookAndFeel()
 	{
 		setColour(defaultBackground, Colour::fromString("FF1E1E1E"));
-		//setColour(defaultText, Colour::fromString("FF4DC796"));
+		setColour(alternativeText1, Colour::fromString("FF4DC796"));
+		setColour(alternativeText2, Colour::fromString("FF0E95DA"));
 		setColour(defaultText, Colours::lightgrey);
 		setColour(defaultBorder, Colour::fromString("FF535353"));
 		setColour(controlBackground, Colour::fromString("FF111111"));
 		setColour(activeBackground, findColour(controlBackground).brighter(0.05));
 		setColour(toggledBackground, Colours::green);
 		setColour(disabledText, Colours::lightgrey);
+		setColour(backgroundText, Colours::grey);
 
 		setColour(Label::textColourId, findColour(defaultText));
 		setColour(ToggleButton::textColourId, findColour(defaultText));
@@ -39,15 +46,19 @@ public:
 	virtual void drawTickBox(Graphics& g, Component& c, float x, float y, float w, float h,
 		bool ticked, bool isEnabled, bool isMouseOverButton, bool isButtonDown)
 	{
-		Image img = ticked ? 
-			ImageCache::getFromMemory(BinaryData::check_true_png, BinaryData::check_true_pngSize) : 
-			ImageCache::getFromMemory(BinaryData::check_false_png, BinaryData::check_false_pngSize);
+		Image img = ImageCache::getFromMemory(BinaryData::check_check_png, BinaryData::check_check_pngSize);
 
-		int l = (w - img.getWidth()) / 2;
+		int l = 0;
 		int t = (h - img.getHeight());
 
-		g.drawImageAt(img, x + l, y + t);
-		
+		juce::Rectangle<int> rect = juce::Rectangle<int>(x + l, y + t, img.getWidth(), img.getHeight());
+
+		g.setColour(findColour(defaultBackground));
+		g.fillRect(rect);
+		g.setColour(findColour(defaultBorder));
+		g.drawRect(rect);
+
+		if (ticked) g.drawImageAt(img, x + l, y + t);
 	}
 
 	virtual void drawButtonBackground(Graphics& g, Button& b, const Colour& backgroundColour,
@@ -72,16 +83,37 @@ public:
 		g.fillRect(b.getLocalBounds().expanded(-1));
 	}
 
-	void drawVerticalSliderHandle(Graphics& g, int x, int y, int w, int h)
+	void drawVerticalSliderHandle(Graphics& g, Slider& s, int x, int y, int w, int h)
 	{
-		juce::Rectangle<int> area;
+		w += 4;
+		h += 0;
+
+		// Let's pretend this never happened...
+		if (s.getSliderStyle() == Slider::SliderStyle::TwoValueHorizontal)
+		{
+			std::swap(w, h);
+		}
+
+		/*const float sliderRadius = (float)(getSliderThumbRadius(slider) - 2);
+		const float outlineThickness = slider.isEnabled() ? 0.8f : 0.3f;
+
+		drawGlassSphere(g,
+			kx - sliderRadius,
+			ky - sliderRadius,
+			sliderRadius * 2.0f,
+			knobColour, outlineThickness);
+
+		return;*/
+		juce::Rectangle<float> area;
 		area.setLeft(x - w / 2);
 		area.setWidth(w);
 		area.setTop(y - h / 2);
 		area.setHeight(h);
 
-		g.setColour(findColour(defaultBorder));
-		g.fillRect(area);
+		g.setColour(findColour(s.isEnabled() ? alternativeText1 : defaultBorder));
+		g.drawRoundedRectangle(area, 2, 1.5f);
+		g.setColour(findColour(s.isEnabled() ? alternativeText2 : defaultBorder).withAlpha(0.7f));
+		g.fillRoundedRectangle(area.reduced(1.5f, 1.5f), 2);
 	}
 
 	virtual void drawLinearSlider(Graphics& g, int x, int y, int width, int height,
@@ -91,14 +123,20 @@ public:
 		if (style == Slider::SliderStyle::LinearVertical)
 		{
 			drawLinearSliderBackground(g, x, y, width, height, sliderPos, minSliderPos, maxSliderPos, style, s);
-			drawVerticalSliderHandle(g, x + (width - x) / 2, sliderPos, 12, s.isEnabled() ? 8 : 1);
+			drawVerticalSliderHandle(g, s, x + (width - x) / 2, sliderPos, mSliderWidth, s.isEnabled() ? mSliderWidth : 1);
 		}
 		else if (style == Slider::SliderStyle::TwoValueVertical)
 		{
 			drawLinearSliderBackground(g, x, y, width, height, sliderPos, minSliderPos, maxSliderPos, style, s);
-			drawVerticalSliderHandle(g, x + (width - x) / 2, minSliderPos, 12, s.isEnabled() ? 8 : 1);
-			drawVerticalSliderHandle(g, x + (width - x) / 2, maxSliderPos, 12, s.isEnabled() ? 8 : 1);
+			drawVerticalSliderHandle(g, s, x + (width - x) / 2, minSliderPos, mSliderWidth, s.isEnabled() ? mSliderWidth : 1);
+			drawVerticalSliderHandle(g, s, x + (width - x) / 2, maxSliderPos, mSliderWidth, s.isEnabled() ? mSliderWidth : 1);
 
+		}
+		else if (style == Slider::SliderStyle::TwoValueHorizontal)
+		{
+			drawLinearSliderBackground(g, x, y, width, height, sliderPos, minSliderPos, maxSliderPos, style, s);
+			drawVerticalSliderHandle(g, s, minSliderPos, y + (height - y) / 2, mSliderWidth, s.isEnabled() ? mSliderWidth : 1);
+			drawVerticalSliderHandle(g, s, maxSliderPos, y + (height - y) / 2, mSliderWidth, s.isEnabled() ? mSliderWidth : 1);
 		}
 		else
 		{
@@ -112,19 +150,16 @@ public:
 	{
 		if (style == Slider::SliderStyle::LinearVertical || style == Slider::SliderStyle::TwoValueVertical)
 		{
-
-			int sliderWidth = 12;
-
 			juce::Rectangle<int> area;
-			area.setLeft((width - sliderWidth) / 2);
+			area.setLeft((width - mSliderWidth) / 2);
 			area.setTop(y);
-			area.setWidth(sliderWidth);
+			area.setWidth(mSliderWidth);
 			area.setHeight(height);
 
 			juce::Rectangle<int> selectedArea;
 			selectedArea.setLeft(area.getTopLeft().getX());
 			selectedArea.setTop(y);
-			selectedArea.setWidth(sliderWidth);
+			selectedArea.setWidth(mSliderWidth);
 			selectedArea.setHeight(sliderPos - y);
 
 			selectedArea.expand(-1, -1);
@@ -139,6 +174,19 @@ public:
 				g.setColour(findColour(activeBackground));
 				g.fillRect(selectedArea);
 			}
+		}
+		else if (style == Slider::SliderStyle::LinearHorizontal || style == Slider::SliderStyle::TwoValueHorizontal)
+		{
+			juce::Rectangle<int> area;
+			area.setLeft(x);
+			area.setTop(y + height / 2 - mSliderWidth / 2);
+			area.setWidth(width);
+			area.setHeight(mSliderWidth);
+
+			g.setColour(findColour(controlBackground));
+			g.fillRect(area);
+			g.setColour(findColour(defaultBorder));
+			g.drawRect(area);
 		}
 		else
 		{
