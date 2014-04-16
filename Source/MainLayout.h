@@ -48,7 +48,7 @@ public:
 
     //==============================================================================
     //[UserMethods]     -- You can add your own custom methods in this section.
-	void updateInputChannels(size_t value) { mInputChannels.get()->setText(String(value), NotificationType::dontSendNotification); }
+	void updateInputChannels(size_t value) { mInputChannels.get()->setText(String((juce::uint32)value), NotificationType::dontSendNotification); }
 
 	void updateFromState(const AdmvPluginState& state)
 	{

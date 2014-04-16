@@ -13,7 +13,7 @@
 #include <functional>
 
 //==============================================================================
-AdmvAudioProcessor::AdmvAudioProcessor()
+AdmvAudioProcessor::AdmvAudioProcessor() : mSpectroSegments(NULL), mGonioSegments(NULL), mLastGonioScale(1.), mMaxStereoPairCount(0), mCurrentInputCount(0)
 {
 	
 }

@@ -21,13 +21,13 @@
 /**
 */
 
-#define TOMATL_PLUGIN_SET_PROPERTY(name, value) mState.##name = value; makeCurrentStateEffective()
+#define TOMATL_PLUGIN_SET_PROPERTY(name, value) mState##.##name = value; makeCurrentStateEffective()
 
 class AdmvAudioProcessor  : public AudioProcessor
 {
 public:
-	tomatl::dsp::SpectrumBlock* mSpectroSegments = NULL;
-	GonioPoints<double>* mGonioSegments = NULL;
+	tomatl::dsp::SpectrumBlock* mSpectroSegments;
+	GonioPoints<double>* mGonioSegments;
 	//==============================================================================
 	AdmvAudioProcessor();
 	~AdmvAudioProcessor();
@@ -116,13 +116,13 @@ public:
 	}
 	size_t getMaxStereoPairCount() { return mMaxStereoPairCount; }
 
-	double mLastGonioScale = 1.0;
+	double mLastGonioScale;
 
 private:
 	std::vector<tomatl::dsp::GonioCalculator<double>*> mGonioCalcs;
 	std::vector<tomatl::dsp::SpectroCalculator<double>*> mSpectroCalcs;
-	size_t mMaxStereoPairCount = 0;
-	size_t mCurrentInputCount = 0;
+	size_t mMaxStereoPairCount;
+	size_t mCurrentInputCount;
 	AdmvPluginState mState;
 	
 	void makeCurrentStateEffective();
