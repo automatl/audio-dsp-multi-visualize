@@ -6,7 +6,7 @@
 class TomatlLookAndFeel : public LookAndFeel_V3
 {
 private:
-	const size_t mSliderWidth = 12;
+	const size_t mSliderWidth;
 public:
 	enum TomatlColorIds
 	{
@@ -22,7 +22,7 @@ public:
 		alternativeText2,
 	};
 
-	TomatlLookAndFeel()
+	TomatlLookAndFeel() : mSliderWidth(12)
 	{
 		setColour(defaultBackground, Colour::fromString("FF1E1E1E"));
 		setColour(alternativeText1, Colour::fromString("FF4DC796"));
