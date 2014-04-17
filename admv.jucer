@@ -55,7 +55,6 @@
       </CONFIGURATIONS>
       <MODULEPATHS>
         <MODULEPATH id="juce_video" path="juce/modules"/>
-        <MODULEPATH id="juce_opengl" path="juce/modules"/>
         <MODULEPATH id="juce_gui_extra" path="juce/modules"/>
         <MODULEPATH id="juce_gui_basics" path="juce/modules"/>
         <MODULEPATH id="juce_graphics" path="juce/modules"/>
@@ -70,6 +69,29 @@
         <MODULEPATH id="juce_audio_basics" path="juce/modules"/>
       </MODULEPATHS>
     </VS2013>
+    <LINUX_MAKE targetFolder="Builds/Linux" vstFolder="~/SDKs/vstsdk2.4" extraCompilerFlags="-I &quot;/media/wizard/admv/dsp-utility/&quot; -fpermissive -std=c++11">
+      <CONFIGURATIONS>
+        <CONFIGURATION name="Debug" libraryPath="/usr/X11R6/lib/" isDebug="1" optimisation="1"
+                       targetName="admv"/>
+        <CONFIGURATION name="Release" libraryPath="/usr/X11R6/lib/" isDebug="0" optimisation="2"
+                       targetName="admv"/>
+      </CONFIGURATIONS>
+      <MODULEPATHS>
+        <MODULEPATH id="juce_video" path="juce/modules"/>
+        <MODULEPATH id="juce_gui_extra" path="juce/modules"/>
+        <MODULEPATH id="juce_gui_basics" path="juce/modules"/>
+        <MODULEPATH id="juce_graphics" path="juce/modules"/>
+        <MODULEPATH id="juce_events" path="juce/modules"/>
+        <MODULEPATH id="juce_data_structures" path="juce/modules"/>
+        <MODULEPATH id="juce_cryptography" path="juce/modules"/>
+        <MODULEPATH id="juce_core" path="juce/modules"/>
+        <MODULEPATH id="juce_audio_processors" path="juce/modules"/>
+        <MODULEPATH id="juce_audio_plugin_client" path="juce/modules"/>
+        <MODULEPATH id="juce_audio_formats" path="juce/modules"/>
+        <MODULEPATH id="juce_audio_devices" path="juce/modules"/>
+        <MODULEPATH id="juce_audio_basics" path="juce/modules"/>
+      </MODULEPATHS>
+    </LINUX_MAKE>
   </EXPORTFORMATS>
   <MODULES>
     <MODULES id="juce_audio_basics" showAllCode="0" useLocalCopy="0"/>
@@ -84,7 +106,6 @@
     <MODULES id="juce_graphics" showAllCode="0" useLocalCopy="0"/>
     <MODULES id="juce_gui_basics" showAllCode="0" useLocalCopy="0"/>
     <MODULES id="juce_gui_extra" showAllCode="0" useLocalCopy="0"/>
-    <MODULES id="juce_opengl" showAllCode="0" useLocalCopy="0"/>
     <MODULES id="juce_video" showAllCode="0" useLocalCopy="0"/>
   </MODULES>
   <JUCEOPTIONS JUCE_QUICKTIME="disabled"/>

@@ -21,7 +21,7 @@
 /**
 */
 
-#define TOMATL_PLUGIN_SET_PROPERTY(name, value) mState##.##name = value; makeCurrentStateEffective()
+#define TOMATL_PLUGIN_SET_PROPERTY(name, value) mState. name = value; makeCurrentStateEffective()
 
 class AdmvAudioProcessor  : public AudioProcessor
 {

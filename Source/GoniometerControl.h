@@ -128,8 +128,9 @@ public:
 				}
 			}
 
+			juce::Colour srcColor = mParentProcessor->getStereoPairColor(segment.mIndex);
 			tomatl::draw::ColorARGB color;
-			color.fromColor(mParentProcessor->getStereoPairColor(segment.mIndex));
+			color.fromColor(srcColor);
 
 			if (points.size() > 4)
 			{

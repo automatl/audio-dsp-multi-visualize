@@ -86,10 +86,10 @@ public:
 	void drawVerticalSliderHandle(Graphics& g, Slider& s, int x, int y, int w, int h)
 	{
 		w += 4;
-		h += 0;
+		h = 8;
 
 		// Let's pretend this never happened...
-		if (s.getSliderStyle() == Slider::SliderStyle::TwoValueHorizontal)
+		if (s.getSliderStyle() == Slider::TwoValueHorizontal)
 		{
 			std::swap(w, h);
 		}
@@ -110,29 +110,46 @@ public:
 		area.setTop(y - h / 2);
 		area.setHeight(h);
 
+		//juce::Rectangle<float> area2;
+		//area2.setLeft(area.getTopLeft().getX(), )
+
 		g.setColour(findColour(s.isEnabled() ? alternativeText1 : defaultBorder));
-		g.drawRoundedRectangle(area, 2, 1.5f);
-		g.setColour(findColour(s.isEnabled() ? alternativeText2 : defaultBorder).withAlpha(0.7f));
-		g.fillRoundedRectangle(area.reduced(1.5f, 1.5f), 2);
+		g.drawRect(area);
+
+		if (w > h)
+		{
+			area.reduce(2, (area.getHeight() - 2) / 2);
+			
+		}
+		else
+		{
+			area.reduce((area.getWidth() - 2) / 2, 2);
+		}
+
+		g.drawRect(area);
+
+		//g.drawRoundedRectangle(area, 2, 1.5f);
+		//g.setColour(findColour(s.isEnabled() ? alternativeText2 : defaultBorder).withAlpha(0.7f));
+		//g.fillRoundedRectangle(area.reduced(1.5f, 1.5f), 2);
 	}
 
 	virtual void drawLinearSlider(Graphics& g, int x, int y, int width, int height,
 		float sliderPos, float minSliderPos, float maxSliderPos,
 		const Slider::SliderStyle style, Slider& s)
 	{
-		if (style == Slider::SliderStyle::LinearVertical)
+		if (style == Slider::LinearVertical)
 		{
 			drawLinearSliderBackground(g, x, y, width, height, sliderPos, minSliderPos, maxSliderPos, style, s);
 			drawVerticalSliderHandle(g, s, x + (width - x) / 2, sliderPos, mSliderWidth, s.isEnabled() ? mSliderWidth : 1);
 		}
-		else if (style == Slider::SliderStyle::TwoValueVertical)
+		else if (style == Slider::TwoValueVertical)
 		{
 			drawLinearSliderBackground(g, x, y, width, height, sliderPos, minSliderPos, maxSliderPos, style, s);
 			drawVerticalSliderHandle(g, s, x + (width - x) / 2, minSliderPos, mSliderWidth, s.isEnabled() ? mSliderWidth : 1);
 			drawVerticalSliderHandle(g, s, x + (width - x) / 2, maxSliderPos, mSliderWidth, s.isEnabled() ? mSliderWidth : 1);
 
 		}
-		else if (style == Slider::SliderStyle::TwoValueHorizontal)
+		else if (style == Slider::TwoValueHorizontal)
 		{
 			drawLinearSliderBackground(g, x, y, width, height, sliderPos, minSliderPos, maxSliderPos, style, s);
 			drawVerticalSliderHandle(g, s, minSliderPos, y + (height - y) / 2, mSliderWidth, s.isEnabled() ? mSliderWidth : 1);
@@ -148,7 +165,7 @@ public:
 		float sliderPos, float minSliderPos, float maxSliderPos,
 		const Slider::SliderStyle style, Slider& s)
 	{
-		if (style == Slider::SliderStyle::LinearVertical || style == Slider::SliderStyle::TwoValueVertical)
+		if (style == Slider::LinearVertical || style == Slider::TwoValueVertical)
 		{
 			juce::Rectangle<int> area;
 			area.setLeft((width - mSliderWidth) / 2);
@@ -175,7 +192,7 @@ public:
 				g.fillRect(selectedArea);
 			}
 		}
-		else if (style == Slider::SliderStyle::LinearHorizontal || style == Slider::SliderStyle::TwoValueHorizontal)
+		else if (style == Slider::LinearHorizontal || style == Slider::TwoValueHorizontal)
 		{
 			juce::Rectangle<int> area;
 			area.setLeft(x);

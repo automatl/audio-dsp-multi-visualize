@@ -2,8 +2,6 @@
 #define TOMATL_JUCE_CUSTOM_DRAWING
 
 #include "../JuceLibraryCode/JuceHeader.h"
-#include <Windows.h>
-#include <comdef.h>
 
 namespace tomatl { namespace draw {
 
@@ -11,7 +9,7 @@ namespace tomatl { namespace draw {
 	{
 		uint8 channel[4];
 
-		void fromColor(Colour& curveColor)
+		void fromColor(const Colour& curveColor)
 		{
 			// TODO: byte order
 			this->channel[0] = curveColor.getBlue();
@@ -24,64 +22,6 @@ namespace tomatl { namespace draw {
 class Util
 {
 public:
-
-	static void blitToComponent(Component& component, Image::BitmapData& pixels, Image::PixelFormat format)
-	{
-		HWND hwnd = (HWND)component.getWindowHandle();
-		
-		HRGN rgn = CreateRectRgn(0, 0, 0, 0);
-		const int regionType = GetUpdateRgn(hwnd, rgn, false);
-
-		PAINTSTRUCT paintStruct;
-		HDC dc = BeginPaint(hwnd, &paintStruct);
-
-		//HWND hwnd = (HWND)component.getPeer()->getNativeHandle();
-		
-		//HDC dc = GetDC(0);
-
-		juce::Rectangle<int> bounds = component.getScreenBounds();
-
-		int pixelStride = 4;
-
-		BITMAPV4HEADER bitmapInfo;
-		zerostruct(bitmapInfo);
-		bitmapInfo.bV4Size = sizeof (BITMAPV4HEADER);
-		bitmapInfo.bV4Width = pixels.width;
-		bitmapInfo.bV4Height = pixels.height;
-		bitmapInfo.bV4Planes = 1;
-		bitmapInfo.bV4CSType = 1;
-		bitmapInfo.bV4BitCount = (unsigned short)(pixelStride * 8);
-
-		bool argb = format == Image::PixelFormat::ARGB;
-
-		if (argb)
-		{
-			bitmapInfo.bV4AlphaMask = 0xff000000;
-			bitmapInfo.bV4RedMask = 0xff0000;
-			bitmapInfo.bV4GreenMask = 0xff00;
-			bitmapInfo.bV4BlueMask = 0xff;
-			bitmapInfo.bV4V4Compression = BI_BITFIELDS;
-		}
-		else
-		{
-			bitmapInfo.bV4V4Compression = BI_RGB;
-		}
-
-		SetMapMode(dc, MM_TEXT);
-
-		int result = StretchDIBits(dc,
-			bounds.getX(), bounds.getY(), bounds.getWidth(), bounds.getHeight(),
-			0, 0, pixels.width, pixels.height,
-			pixels.getPixelPointer(0, 0), (const BITMAPINFO*)&bitmapInfo,
-			DIB_RGB_COLORS, SRCCOPY);
-
-		DeleteObject(rgn);
-		EndPaint(hwnd, &paintStruct);
-
-		//const TCHAR* zhopa = _com_error(GetLastError()).ErrorMessage();
-
-		//result = result;
-	}
 
 	// TODO: will not decay to 0 properly
 	static void multiplyAlphas(Image::BitmapData& pixels, float multiplier)

@@ -48,16 +48,16 @@ public:
 
     //==============================================================================
     //[UserMethods]     -- You can add your own custom methods in this section.
-	void updateInputChannels(size_t value) { mInputChannels.get()->setText(String((juce::uint32)value), NotificationType::dontSendNotification); }
+	void updateInputChannels(size_t value) { mInputChannels.get()->setText(String((juce::uint32)value), dontSendNotification); }
 
 	void updateFromState(const AdmvPluginState& state)
 	{
-		mGonioManualScale.get()->setToggleState(state.mManualGoniometerScale, NotificationType::dontSendNotification);
-		mGonioScaleValue.get()->setValue(TOMATL_TO_DB(state.mManualGoniometerScaleValue), NotificationType::dontSendNotification);
+		mGonioManualScale.get()->setToggleState(state.mManualGoniometerScale, dontSendNotification);
+		mGonioScaleValue.get()->setValue(TOMATL_TO_DB(state.mManualGoniometerScaleValue), dontSendNotification);
 		mGonioScaleValue.get()->setEnabled(state.mManualGoniometerScale);
-		mSpectroMagnitudeScale.get()->setMinValue(state.mSpectrometerMagnitudeScale.first, NotificationType::dontSendNotification);
-		mSpectroMagnitudeScale.get()->setMaxValue(state.mSpectrometerMagnitudeScale.second, NotificationType::dontSendNotification);
-		mSpectroFreqScale.get()->setMinAndMaxValues(state.mSpectrometerFrequencyScale.first, state.mSpectrometerFrequencyScale.second, NotificationType::dontSendNotification);
+		mSpectroMagnitudeScale.get()->setMinValue(state.mSpectrometerMagnitudeScale.first, dontSendNotification);
+		mSpectroMagnitudeScale.get()->setMaxValue(state.mSpectrometerMagnitudeScale.second, dontSendNotification);
+		mSpectroFreqScale.get()->setMinAndMaxValues(state.mSpectrometerFrequencyScale.first, state.mSpectrometerFrequencyScale.second, dontSendNotification);
 	}
 
 	juce::Rectangle<int> getGonioRectangle()
@@ -72,7 +72,7 @@ public:
 
 	void updateGonioScale(double scale)
 	{
-		mGonioScaleValue.get()->setValue(TOMATL_TO_DB(1. / scale), NotificationType::dontSendNotification);
+		mGonioScaleValue.get()->setValue(TOMATL_TO_DB(1. / scale), dontSendNotification);
 	}
     //[/UserMethods]
 
