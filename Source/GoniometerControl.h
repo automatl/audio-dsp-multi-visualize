@@ -19,7 +19,7 @@ private:
 	void initLayers()
 	{
 		Graphics buffer(mContent);
-		buffer.setColour(Colour::fromString("FF101010"));
+		buffer.setColour(Colours::transparentBlack);
 		buffer.fillAll();
 
 		float sqrt2 = std::sqrt(2);
@@ -85,11 +85,6 @@ public:
 
 	void paint (Graphics& g)
 	{
-		if (mParentProcessor->mGonioSegments == NULL)
-		{
-			return;
-		}
-
 		Graphics buffer(mContent);
 		
 		Image::BitmapData pixels(mContent, Image::BitmapData::ReadWriteMode::readWrite);
@@ -97,6 +92,11 @@ public:
 		// TODO: split to several smaller methods
 		for (int cn = 0; cn < mParentProcessor->getMaxStereoPairCount(); ++cn)
 		{
+			if (mParentProcessor->mGonioSegments == NULL)
+			{
+				break;
+			}
+
 			GonioPoints<double> segment = mParentProcessor->mGonioSegments[cn];
 
 			double totalDistance = 0;
@@ -162,7 +162,7 @@ public:
 
 			p.closeSubPath();
 
-			buffer.setColour(mParentProcessor->getStereoPairColor(segment.mIndex));
+			//buffer.setColour(mParentProcessor->getStereoPairColor(segment.mIndex));
 			
 			//mContent.multiplyAllAlphas(0.95);
 

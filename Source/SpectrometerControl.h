@@ -117,11 +117,6 @@ public:
 
 	void paint(Graphics& g)
 	{
-		if (mParentProcessor->mSpectroSegments == NULL)
-		{
-			return;
-		}
-
 		clearArgbImage(mBuffer);
 		bool backgroundRedraw = false;
 		tomatl::dsp::Bound2D<double> bounds;
@@ -142,6 +137,11 @@ public:
 		
 		for (int pn = 0; pn < mParentProcessor->getMaxStereoPairCount(); ++pn)
 		{
+			if (mParentProcessor->mSpectroSegments == NULL)
+			{
+				break;
+			}
+
 			tomatl::dsp::SpectrumBlock block = mParentProcessor->mSpectroSegments[pn];
 
 			if (block.mLength <= 0)
@@ -167,13 +167,14 @@ public:
 			// TODO: omit DC offset (f0 == 0)
 			for (int i = 0; i < block.mLength - 1; i += 2)
 			{
+				// TODO: maybe implement some clever decimation instead of just choosing max magnitude value
 				double f0 = mFreqGrid.binNumberToFrequency(block.mData[i + 0].first);
 				int x0 = mFreqGrid.freqToX(f0 > 0 ? f0 : 0.000001);
-				y0 = std::min(y0, mFreqGrid.dbToY(TOMATL_TO_DB(block.mData[i + 0].second)));
+				y0 = std::min(y0, mFreqGrid.dbToY(TOMATL_TO_DB(block.mData[i + 0].second))); // this min is really max as y coord is top-to-bottom
 
 				double f1 = mFreqGrid.binNumberToFrequency(block.mData[i + 1].first);
 				int x1 = mFreqGrid.freqToX(f1);
-				y1 = std::min(y1, mFreqGrid.dbToY(TOMATL_TO_DB(block.mData[i + 1].second)));
+				y1 = std::min(y1, mFreqGrid.dbToY(TOMATL_TO_DB(block.mData[i + 1].second))); // this min is really max as y coord is top-to-bottom
 
 				if (!mFreqGrid.isFrequencyVisible(f0) && !mFreqGrid.isFrequencyVisible(f1))
 				{
@@ -187,6 +188,7 @@ public:
 					firstSignificantPointAdded = true;
 				}
 
+				
 				if (x0 - lastX > 5)
 				{
 					lastDx = x0 - lastX;
@@ -198,7 +200,7 @@ public:
 
 					y0 = y1 = mFreqGrid.minusInfToY();
 				}
-				else if (x0 - lastX > 1)
+				else if (x0 - lastX >= 1)
 				{
 					lastDx = x0 - lastX;
 
