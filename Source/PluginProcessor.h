@@ -84,6 +84,9 @@ public:
 
 	size_t getCurrentInputCount() { return mCurrentInputCount; }
 
+	// TODO: host can stop to supply blocks, and not call releaseResources(), so this on isn't working properly
+	bool isCurrentlyProcessing() { return mGonioSegments != NULL; }
+
 	Colour getStereoPairColor(int index) 
 	{ 
 		/*0x4ae329,
@@ -101,11 +104,11 @@ public:
 		{
 			return Colour::fromString("ff3192e7");
 		}
-		else if (index = 2)
+		else if (index == 2)
 		{
 			return Colour::fromString("ffc628e7");
 		}
-		else if (index = 3)
+		else if (index == 3)
 		{
 			return Colour::fromString("ff5218f7");
 		}

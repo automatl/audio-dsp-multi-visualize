@@ -94,6 +94,12 @@ MainLayout::MainLayout (AdmvAudioProcessor* plugin)
     //[UserPreSize]
 	mParentProcessor = plugin;
 
+#if JUCE_DEBUG
+	mDoNothing->setVisible(true);
+#else
+	mDoNothing->setVisible(false);
+#endif
+
 	// This hack unsets label colours assigned by Introjucer, as there is no way to avoid these colors automatic generation
 	for (int i = 0; i < getNumChildComponents(); ++i)
 	{

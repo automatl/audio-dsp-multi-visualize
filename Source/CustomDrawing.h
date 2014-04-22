@@ -23,6 +23,71 @@ class Util
 {
 public:
 
+	static forcedinline void blend(Image& background, Image& subject, Image& surface)
+	{
+		Image::BitmapData srfpix(surface, Image::BitmapData::readWrite);
+		Image::BitmapData backpix(background, Image::BitmapData::readWrite);
+		Image::BitmapData subpix(subject, Image::BitmapData::readWrite);
+
+		// TODO: crash or fallback
+		if (!(srfpix.pixelStride == backpix.pixelStride &&
+			backpix.pixelStride == subpix.pixelStride &&
+			subpix.pixelStride == 4 &&
+			subpix.pixelFormat == Image::ARGB))
+		{
+			return;
+		}
+
+
+		int h = std::min(subpix.height, std::min(backpix.height, srfpix.height));
+		int w = std::min(subpix.width, std::min(backpix.width, srfpix.width));
+
+		uint8 alphaOffset = 3;
+
+		uint8 balpha;
+		size_t offset, foffset = 0;
+
+		uint8* srfline;
+		uint8* subline;
+		uint8* backline;
+
+		uint16 reg;
+
+		for (int i = 0; i < h; ++i)
+		{
+			srfline = srfpix.getLinePointer(i);
+			subline = subpix.getLinePointer(i);
+			backline = backpix.getLinePointer(i);
+
+			offset = 0;
+
+			for (int j = 0; j < w; ++j)
+			{
+				balpha = 255 - subline[offset + alphaOffset];
+
+				//*(uint32*)(srfline + offset) = (*(uint32*)(subline + offset) & 0xFF00FF00) + TOMATL_FAST_DIVIDE_BY_255(balpha * (*(uint32*)(backline + offset) & 0xFF00FF00));
+
+				reg = backline[offset + 0] * balpha;
+				srfline[offset + 0] = TOMATL_FAST_DIVIDE_BY_255(reg);
+				srfline[offset + 0] += subline[offset + 0];
+
+				reg = backline[offset + 1] * balpha;
+				srfline[offset + 1] = TOMATL_FAST_DIVIDE_BY_255(reg);
+				srfline[offset + 1] += subline[offset + 1];
+
+				reg = backline[offset + 2] * balpha;
+				srfline[offset + 2] = TOMATL_FAST_DIVIDE_BY_255(reg);
+				srfline[offset + 2] += subline[offset + 2];
+
+				//srfline[offset + 0] = subline[offset + 0] + TOMATL_FAST_DIVIDE_BY_255(backline[offset + 0] * balpha);
+				//srfline[offset + 1] = subline[offset + 1] + TOMATL_FAST_DIVIDE_BY_255(backline[offset + 1] * balpha);
+				//srfline[offset + 2] = subline[offset + 2] + TOMATL_FAST_DIVIDE_BY_255(backline[offset + 2] * balpha);
+
+				offset += subpix.pixelStride;
+			}
+		}
+	}
+
 	// TODO: will not decay to 0 properly
 	static void multiplyAlphas(Image::BitmapData& pixels, float multiplier)
 	{

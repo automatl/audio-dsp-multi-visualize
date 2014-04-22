@@ -15,7 +15,7 @@
 //==============================================================================
 AdmvAudioProcessor::AdmvAudioProcessor() : mSpectroSegments(NULL), mGonioSegments(NULL), mLastGonioScale(1.), mMaxStereoPairCount(0), mCurrentInputCount(0)
 {
-	
+	releaseResources();
 }
 
 AdmvAudioProcessor::~AdmvAudioProcessor()
@@ -172,7 +172,7 @@ void AdmvAudioProcessor::releaseResources()
 	TOMATL_BRACE_DELETE(mGonioSegments);
 }
 
-void AdmvAudioProcessor::processBlock (AudioSampleBuffer& buffer, MidiBuffer& midiMessages)
+void AdmvAudioProcessor::processBlock(AudioSampleBuffer& buffer, MidiBuffer& midiMessages)
 {
 	double cp[2];
 	
@@ -181,6 +181,12 @@ void AdmvAudioProcessor::processBlock (AudioSampleBuffer& buffer, MidiBuffer& mi
 
 	for (int channel = 0; channel < (getNumInputChannels() - 1); channel += 2)
 	{
+		// No need to process signal if editor is closed
+		if (getActiveEditor() == NULL)
+		{
+			break;
+		}
+
 		// TODO: investigate how to get number of input channels really connected to the plugin ATM.
 		// It seems that getNumInputChannels() will always return max possible defined by JucePlugin_MaxNumInputChannels
 		// This solution is bad, because it iterates through all input buffers.
@@ -203,13 +209,13 @@ void AdmvAudioProcessor::processBlock (AudioSampleBuffer& buffer, MidiBuffer& mi
 
 			tomatl::dsp::SpectrumBlock spectroResult = mSpectroCalcs[channel / 2]->process((double*)&cp, getSampleRate());
 
-			if (res != NULL && getActiveEditor() != NULL)
+			if (res != NULL)
 			{
 				mGonioSegments[channel / 2] = GonioPoints<double>(res, mGonioCalcs[channel / 2]->getSegmentLength(), channel / 2, sampleRate);
 				mLastGonioScale = mGonioCalcs[channel / 2]->getCurrentScaleValue();
 			}
 
-			if (spectroResult.mLength > 0 && getActiveEditor() != NULL)
+			if (spectroResult.mLength > 0)
 			{
 				mSpectroSegments[channel / 2] = spectroResult;
 			}

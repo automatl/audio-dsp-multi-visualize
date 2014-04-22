@@ -13,6 +13,7 @@ class GoniometerControl : public ILateInitComponent
 private:
 	Image mContent;
 	Image mBackground;
+	Image mSurface;
 	AdmvAudioProcessor* mParentProcessor;
 
 	void initLayers()
@@ -54,9 +55,9 @@ public:
 		setOpaque(true);
 		setPaintingIsUnclipped(false);
 		setSize(bounds.getWidth(), bounds.getHeight());
-		mContent = Image(Image::ARGB, getWidth(), getHeight(), true);
+		mContent = Image(Image::ARGB, getWidth(), getHeight(), true, TomatlImageType());
 		mBackground = Image(Image::RGB, getWidth(), getHeight(), true, TomatlImageType());
-
+		mSurface = Image(Image::RGB, getWidth(), getHeight(), true, TomatlImageType());
 
 		initLayers();
 	}
@@ -84,6 +85,11 @@ public:
 
 	void paint (Graphics& g)
 	{
+		if (mParentProcessor->mGonioSegments == NULL)
+		{
+			return;
+		}
+
 		Graphics buffer(mContent);
 		
 		Image::BitmapData pixels(mContent, Image::BitmapData::ReadWriteMode::readWrite);
@@ -157,15 +163,33 @@ public:
 			p.closeSubPath();
 
 			buffer.setColour(mParentProcessor->getStereoPairColor(segment.mIndex));
-			//buffer.strokePath(p.createPathWithRoundedCorners(20.), PathStrokeType(1.0f));
-			//
-			// TODO: fix custom multiply alphas
-			//tomatl::draw::Util::multiplyAlphas(pixels, 0.95);
-			mContent.multiplyAllAlphas(0.95);
+			
+			//mContent.multiplyAllAlphas(0.95);
+
+			uint8 alpha = 242;
+			uint16 reg;
+			// Decay
+			// TODO: move to CustomDrawing
+			for (int i = 0; i < pixels.height; ++i)
+			{
+				uint8* line = pixels.getLinePointer(i);
+
+				for (int j = 0; j < pixels.width * pixels.pixelStride; ++j)
+				{
+					reg = line[j] * alpha;
+
+					line[j] = TOMATL_FAST_DIVIDE_BY_255(reg);
+				}
+			}
 		}
 
+#if TOMATL_CUSTOM_BLENDING
+		tomatl::draw::Util::blend(mBackground, mContent, mSurface);
+		g.drawImageAt(mSurface, 0, 0, false);
+#else
 		g.drawImageAt(mBackground, 0, 0);
 		g.drawImageAt(mContent, 0, 0);
+#endif
 	}
 
 	void resized()
