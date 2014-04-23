@@ -244,6 +244,17 @@ public:
 			buffer.setColour(mParentProcessor->getStereoPairColor(paths[i].second).withAlpha((float)0.1));
 			buffer.fillPath(p);
 		}
+
+		if (isMouseOver())
+		{
+			auto mouseLocation = getMouseXYRelative();
+			
+			if (mFreqGrid.containsPoint(mouseLocation.getX(), mouseLocation.getY()))
+			{
+				buffer.setColour(LookAndFeel::getDefaultLookAndFeel().findColour(TomatlLookAndFeel::alternativeText1).withAlpha(0.8f));
+				buffer.drawFittedText(mFreqGrid.getPointNotation(mouseLocation.getX(), mouseLocation.getY()).c_str(), juce::Rectangle<int>(5, 5, 200, 20), Justification::topLeft, 1);
+			}
+		}
 		
 #if TOMATL_CUSTOM_BLENDING
 		tomatl::draw::Util::blend(mBackground, mBuffer, mSurface);
