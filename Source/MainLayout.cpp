@@ -39,7 +39,7 @@ MainLayout::MainLayout (AdmvAudioProcessor* plugin)
     mInputChannels->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
     addAndMakeVisible (mGonioManualScale = new ToggleButton ("Goniometer Manual Scale"));
-    mGonioManualScale->setButtonText (TRANS("Custom scale"));
+    mGonioManualScale->setButtonText (TRANS("Manual scale"));
     mGonioManualScale->addListener (this);
 
     addAndMakeVisible (mGonioScaleValue = new Slider ("Gonio Scale Value"));
@@ -73,16 +73,12 @@ MainLayout::MainLayout (AdmvAudioProcessor* plugin)
     mSpectroPlaceholder->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
     addAndMakeVisible (mChcLabel = new Label ("Channel Count",
-                                              TRANS("Channel Count:")));
+                                              TRANS("Input count:")));
     mChcLabel->setFont (Font (15.00f, Font::plain));
     mChcLabel->setJustificationType (Justification::centredLeft);
-    mChcLabel->setEditable (false, true, false);
+    mChcLabel->setEditable (false, false, false);
     mChcLabel->setColour (TextEditor::textColourId, Colours::black);
     mChcLabel->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
-    mChcLabel->addListener (this);
-
-    addAndMakeVisible (mDoNothing = new TextButton ("Do Nothing"));
-    mDoNothing->addListener (this);
 
     addAndMakeVisible (mSpectroFreqScale = new Slider ("Spectrum Frequency Scale"));
     mSpectroFreqScale->setRange (20, 30000, 0);
@@ -90,15 +86,18 @@ MainLayout::MainLayout (AdmvAudioProcessor* plugin)
     mSpectroFreqScale->setTextBoxStyle (Slider::NoTextBox, false, 80, 20);
     mSpectroFreqScale->addListener (this);
 
+    addAndMakeVisible (mAboutButton = new TextButton ("about button"));
+    mAboutButton->setTooltip (TRANS("Help"));
+    mAboutButton->setButtonText (TRANS("?"));
+    mAboutButton->addListener (this);
+
+    addAndMakeVisible (mOptionsBtn = new TextButton ("options button"));
+    mOptionsBtn->setButtonText (TRANS("Options"));
+    mOptionsBtn->addListener (this);
+
 
     //[UserPreSize]
 	mParentProcessor = plugin;
-
-#if JUCE_DEBUG
-	mDoNothing->setVisible(true);
-#else
-	mDoNothing->setVisible(false);
-#endif
 
 	// This hack unsets label colours assigned by Introjucer, as there is no way to avoid these colors automatic generation
 	for (int i = 0; i < getNumChildComponents(); ++i)
@@ -116,7 +115,7 @@ MainLayout::MainLayout (AdmvAudioProcessor* plugin)
 	}
     //[/UserPreSize]
 
-    setSize (991, 450);
+    setSize (991, 415);
 
 
     //[Constructor] You can add your own custom stuff here..
@@ -135,8 +134,9 @@ MainLayout::~MainLayout()
     mGonioPlaceholder = nullptr;
     mSpectroPlaceholder = nullptr;
     mChcLabel = nullptr;
-    mDoNothing = nullptr;
     mSpectroFreqScale = nullptr;
+    mAboutButton = nullptr;
+    mOptionsBtn = nullptr;
 
 
     //[Destructor]. You can add your own custom destruction code here..
@@ -158,15 +158,16 @@ void MainLayout::paint (Graphics& g)
 
 void MainLayout::resized()
 {
-    mInputChannels->setBounds (112, 424, 32, 24);
-    mGonioManualScale->setBounds (9, 368, 112, 24);
+    mInputChannels->setBounds (336, 352, 24, 24);
+    mGonioManualScale->setBounds (6, 352, 104, 24);
     mGonioScaleValue->setBounds (351, 0, 32, 360);
     mSpectroMagnitudeScale->setBounds (955, 0, 32, 360);
     mGonioPlaceholder->setBounds (9, 9, 342, 342);
     mSpectroPlaceholder->setBounds (383, 9, 568, 342);
-    mChcLabel->setBounds (9, 424, 112, 24);
-    mDoNothing->setBounds (202, 368, 150, 24);
+    mChcLabel->setBounds (256, 352, 88, 24);
     mSpectroFreqScale->setBounds (375, 355, 586, 24);
+    mAboutButton->setBounds (960, 384, 24, 24);
+    mOptionsBtn->setBounds (864, 384, 86, 24);
     //[UserResized] Add your own custom resize handling here..
 	mSpectroFreqScale->setRange(0, 100); // simple percentage here, all scaling is handling by the client
 	mSpectroMagnitudeScale->setRange(0, 100);
@@ -184,10 +185,22 @@ void MainLayout::buttonClicked (Button* buttonThatWasClicked)
 		mParentProcessor->setManualGonioScaleEnabled(buttonThatWasClicked->getToggleState());
         //[/UserButtonCode_mGonioManualScale]
     }
-    else if (buttonThatWasClicked == mDoNothing)
+    else if (buttonThatWasClicked == mAboutButton)
     {
-        //[UserButtonCode_mDoNothing] -- add your button handler code here..
-        //[/UserButtonCode_mDoNothing]
+        //[UserButtonCode_mAboutButton] -- add your button handler code here..
+		showAboutDialog();
+        //[/UserButtonCode_mAboutButton]
+    }
+    else if (buttonThatWasClicked == mOptionsBtn)
+    {
+        //[UserButtonCode_mOptionsBtn] -- add your button handler code here..
+		// TODO: implement options dialog
+		AlertWindow::showMessageBoxAsync(AlertWindow::InfoIcon,
+			"Not implemented",
+			"Option dialog goes here",
+			"ok",
+			this);
+        //[/UserButtonCode_mOptionsBtn]
     }
 
     //[UserbuttonClicked_Post]
@@ -222,21 +235,6 @@ void MainLayout::sliderValueChanged (Slider* sliderThatWasMoved)
     //[/UsersliderValueChanged_Post]
 }
 
-void MainLayout::labelTextChanged (Label* labelThatHasChanged)
-{
-    //[UserlabelTextChanged_Pre]
-    //[/UserlabelTextChanged_Pre]
-
-    if (labelThatHasChanged == mChcLabel)
-    {
-        //[UserLabelCode_mChcLabel] -- add your label text handling code here..
-        //[/UserLabelCode_mChcLabel]
-    }
-
-    //[UserlabelTextChanged_Post]
-    //[/UserlabelTextChanged_Post]
-}
-
 
 
 //[MiscUserCode] You can add your own definitions of your custom methods or any other code here...
@@ -255,15 +253,15 @@ BEGIN_JUCER_METADATA
 <JUCER_COMPONENT documentType="Component" className="MainLayout" componentName=""
                  parentClasses="public Component" constructorParams="AdmvAudioProcessor* plugin"
                  variableInitialisers="" snapPixels="8" snapActive="1" snapShown="1"
-                 overlayOpacity="0.330" fixedSize="1" initialWidth="991" initialHeight="450">
+                 overlayOpacity="0.330" fixedSize="1" initialWidth="991" initialHeight="415">
   <BACKGROUND backgroundColour="ff1e1e1e"/>
   <LABEL name="Input Channels" id="7b8ac8bacb5bd100" memberName="mInputChannels"
-         virtualName="" explicitFocusOrder="0" pos="112 424 32 24" edTextCol="ff000000"
+         virtualName="" explicitFocusOrder="0" pos="336 352 24 24" edTextCol="ff000000"
          edBkgCol="0" labelText="0" editableSingleClick="0" editableDoubleClick="0"
          focusDiscardsChanges="0" fontname="Default font" fontsize="15"
          bold="0" italic="0" justification="33"/>
   <TOGGLEBUTTON name="Goniometer Manual Scale" id="5481fd838f81a9d7" memberName="mGonioManualScale"
-                virtualName="" explicitFocusOrder="0" pos="9 368 112 24" buttonText="Custom scale"
+                virtualName="" explicitFocusOrder="0" pos="6 352 104 24" buttonText="Manual scale"
                 connectedEdges="0" needsCallback="1" radioGroupId="0" state="0"/>
   <SLIDER name="Gonio Scale Value" id="759c99b88517019b" memberName="mGonioScaleValue"
           virtualName="" explicitFocusOrder="0" pos="351 0 32 360" min="-72"
@@ -284,17 +282,20 @@ BEGIN_JUCER_METADATA
          editableSingleClick="0" editableDoubleClick="0" focusDiscardsChanges="0"
          fontname="Default font" fontsize="15" bold="0" italic="0" justification="36"/>
   <LABEL name="Channel Count" id="b9537e4c0c585d02" memberName="mChcLabel"
-         virtualName="" explicitFocusOrder="0" pos="9 424 112 24" edTextCol="ff000000"
-         edBkgCol="0" labelText="Channel Count:" editableSingleClick="0"
-         editableDoubleClick="1" focusDiscardsChanges="0" fontname="Default font"
+         virtualName="" explicitFocusOrder="0" pos="256 352 88 24" edTextCol="ff000000"
+         edBkgCol="0" labelText="Input count:" editableSingleClick="0"
+         editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="15" bold="0" italic="0" justification="33"/>
-  <TEXTBUTTON name="Do Nothing" id="3fdb35449265341e" memberName="mDoNothing"
-              virtualName="" explicitFocusOrder="0" pos="202 368 150 24" buttonText="Do Nothing"
-              connectedEdges="0" needsCallback="1" radioGroupId="0"/>
   <SLIDER name="Spectrum Frequency Scale" id="fea54c0326f58da2" memberName="mSpectroFreqScale"
           virtualName="" explicitFocusOrder="0" pos="375 355 586 24" min="20"
           max="30000" int="0" style="TwoValueHorizontal" textBoxPos="NoTextBox"
           textBoxEditable="1" textBoxWidth="80" textBoxHeight="20" skewFactor="1"/>
+  <TEXTBUTTON name="about button" id="268c0f6cf9c85fec" memberName="mAboutButton"
+              virtualName="" explicitFocusOrder="0" pos="960 384 24 24" tooltip="Help"
+              buttonText="?" connectedEdges="0" needsCallback="1" radioGroupId="0"/>
+  <TEXTBUTTON name="options button" id="a11b265cc1198ab6" memberName="mOptionsBtn"
+              virtualName="" explicitFocusOrder="0" pos="864 384 86 24" buttonText="Options"
+              connectedEdges="0" needsCallback="1" radioGroupId="0"/>
 </JUCER_COMPONENT>
 
 END_JUCER_METADATA

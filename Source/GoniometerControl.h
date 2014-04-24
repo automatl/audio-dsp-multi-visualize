@@ -22,12 +22,14 @@ private:
 		buffer.setColour(Colours::transparentBlack);
 		buffer.fillAll();
 
+		int margin = 4;
+
 		float sqrt2 = std::sqrt(2);
 
 		Point<float> center(getWidth() / 2, getHeight() / 2);
 
-		float lineScaleX = getWidth() / 2;
-		float lineScaleY = getHeight() / 2;
+		float lineScaleX = (getWidth()) / 2 - margin;
+		float lineScaleY = (getHeight()) / 2 - margin;
 
 		
 		Line<float> leftDiag(movePoint<float>(center, -lineScaleX / sqrt2, -lineScaleY / sqrt2), movePoint<float>(center, +lineScaleX / sqrt2, +lineScaleY / sqrt2));
@@ -38,7 +40,7 @@ private:
 		background.setColour(Colour::fromString("FF101010"));
 		background.fillAll();
 		background.setColour(Colour::fromString("FF202020"));
-		background.drawEllipse(0., 0., getWidth(), getHeight(), 1.5);
+		background.drawEllipse(margin, margin, getWidth() - margin * 2, getHeight() - margin * 2, 1.5);
 		
 		
 		background.drawLine(leftDiag);
@@ -164,22 +166,22 @@ public:
 
 			//buffer.setColour(mParentProcessor->getStereoPairColor(segment.mIndex));
 			
-			//mContent.multiplyAllAlphas(0.95);
+			//mContent.multiplyAllAlphas(0.95);	
+		}
 
-			uint8 alpha = 242;
-			uint16 reg;
-			// Decay
-			// TODO: move to CustomDrawing
-			for (int i = 0; i < pixels.height; ++i)
+		uint8 alpha = 242;
+		uint16 reg;
+		// Decay
+		// TODO: move to CustomDrawing
+		for (int i = 0; i < pixels.height; ++i)
+		{
+			uint8* line = pixels.getLinePointer(i);
+
+			for (int j = 0; j < pixels.width * pixels.pixelStride; ++j)
 			{
-				uint8* line = pixels.getLinePointer(i);
+				reg = line[j] * alpha;
 
-				for (int j = 0; j < pixels.width * pixels.pixelStride; ++j)
-				{
-					reg = line[j] * alpha;
-
-					line[j] = TOMATL_FAST_DIVIDE_BY_255(reg);
-				}
+				line[j] = TOMATL_FAST_DIVIDE_BY_255(reg);
 			}
 		}
 

@@ -24,6 +24,7 @@
 #include "JuceHeader.h"
 #include "PluginProcessor.h"
 #include "TomatlLookAndFeel.h"
+#include "AboutLayout.h"
 //[/Headers]
 
 
@@ -38,8 +39,7 @@
 */
 class MainLayout  : public Component,
                     public ButtonListener,
-                    public SliderListener,
-                    public LabelListener
+                    public SliderListener
 {
 public:
     //==============================================================================
@@ -74,13 +74,36 @@ public:
 	{
 		mGonioScaleValue.get()->setValue(TOMATL_TO_DB(1. / scale), dontSendNotification);
 	}
+
+	void showAboutDialog()
+	{
+		DialogWindow::LaunchOptions options;
+		AboutLayout* layout = new AboutLayout();
+
+		options.content.setOwned(layout);
+
+		juce::Rectangle<int> area(0, 0, layout->getWidth(), layout->getHeight());
+		options.content->setSize(area.getWidth(), area.getHeight());
+
+		options.dialogTitle = "About";
+		options.dialogBackgroundColour = LookAndFeel::getDefaultLookAndFeel().findColour(TomatlLookAndFeel::defaultBackground);
+		options.escapeKeyTriggersCloseButton = true;
+		options.useNativeTitleBar = false;
+		options.resizable = true;
+
+		const RectanglePlacement placement(RectanglePlacement::xRight + RectanglePlacement::yBottom + RectanglePlacement::doNotResize);
+
+		DialogWindow* dw = options.launchAsync();
+
+		dw->centreAroundComponent(this, layout->getWidth(), layout->getHeight());
+	}
+
     //[/UserMethods]
 
     void paint (Graphics& g);
     void resized();
     void buttonClicked (Button* buttonThatWasClicked);
     void sliderValueChanged (Slider* sliderThatWasMoved);
-    void labelTextChanged (Label* labelThatHasChanged);
 
 
 
@@ -97,8 +120,9 @@ private:
     ScopedPointer<Label> mGonioPlaceholder;
     ScopedPointer<Label> mSpectroPlaceholder;
     ScopedPointer<Label> mChcLabel;
-    ScopedPointer<TextButton> mDoNothing;
     ScopedPointer<Slider> mSpectroFreqScale;
+    ScopedPointer<TextButton> mAboutButton;
+    ScopedPointer<TextButton> mOptionsBtn;
 
 
     //==============================================================================

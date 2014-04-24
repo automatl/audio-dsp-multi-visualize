@@ -192,6 +192,9 @@ void AdmvAudioProcessor::processBlock(AudioSampleBuffer& buffer, MidiBuffer& mid
 		// This solution is bad, because it iterates through all input buffers.
 		if (buffer.getMagnitude(channel, 0, buffer.getNumSamples()) == 0. && buffer.getMagnitude(channel + 1, 0, buffer.getNumSamples()) == 0.)
 		{
+			mGonioSegments[channel / 2] = GonioPoints<double>();
+			mSpectroSegments[channel / 2] = tomatl::dsp::SpectrumBlock();
+
 			continue;
 		}
 

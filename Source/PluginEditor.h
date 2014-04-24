@@ -85,6 +85,8 @@ public:
 		return mLayout;
 	}
 
+	
+
 	virtual void handleMessage(const Message& message)
 	{
 		EditorAction& action = reinterpret_cast<EditorAction&>((Message&)message);
