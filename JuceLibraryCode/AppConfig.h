@@ -19,6 +19,7 @@
 #define NOMINMAX
 #define JUCE_ENABLE_REPAINT_DEBUGGING 0
 #define TOMATL_CUSTOM_BLENDING 0
+#define TOMATL_FPS 25.
 //#define JUCE_DIRECT2D 1
 //#define JUCE_USE_DIRECTWRITE 1
 // (You can add your own code in this section, and the Introjucer will not overwrite it)

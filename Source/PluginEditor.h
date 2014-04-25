@@ -72,7 +72,7 @@ public:
 		addComponent(mLayout.getGonioRectangle(), mGonio);
 		addComponent(mLayout.getSpectroRectangle(), mSpectrometer);
 
-		startTimer(1000. / 25.);
+		startTimer(1000. / TOMATL_FPS);
 	}
 
 	~AdmvAudioProcessorEditor()

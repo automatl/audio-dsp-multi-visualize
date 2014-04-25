@@ -109,6 +109,13 @@ public:
 				continue;
 			}
 
+			if (segment.mFramesRendered > TOMATL_FPS)
+			{
+				continue;
+			}
+
+			mParentProcessor->mGonioSegments[cn].mFramesRendered += 1;
+
 			double x = TOMATL_BOUND_VALUE((int)((segment.mData[0].first + 1.) * getWidth() / 2.), 0, getWidth() - 1);
 			double y = TOMATL_BOUND_VALUE((int)((segment.mData[0].second + 1.) * getHeight() / 2.), 0, getHeight() - 1);
 

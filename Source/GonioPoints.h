@@ -13,6 +13,7 @@ public:
 		mLength = 0;
 		mIndex = 0;
 		mSampleRate = 0;
+		mFramesRendered = 0;
 	}
 
 	GonioPoints(std::pair<T, T>* data, size_t length, size_t index, size_t sampleRate)
@@ -21,12 +22,14 @@ public:
 		mLength = length;
 		mIndex = index;
 		mSampleRate = sampleRate;
+		mFramesRendered = 0;
 	}
 
 	std::pair<T, T>* mData;
 	size_t mLength;
 	size_t mIndex;
 	size_t mSampleRate;
+	size_t mFramesRendered;
 };
 
 #endif

@@ -149,6 +149,13 @@ public:
 				continue;
 			}
 
+			if (block.mFramesRendered > TOMATL_FPS)
+			{
+				continue;
+			}
+
+			mParentProcessor->mSpectroSegments[pn].mFramesRendered += 1;
+
 			mFreqGrid.updateSampleRate(block.mSampleRate);
 			mFreqGrid.updateBinCount(block.mLength);
 

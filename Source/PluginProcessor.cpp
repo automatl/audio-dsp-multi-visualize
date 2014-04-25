@@ -190,14 +190,14 @@ void AdmvAudioProcessor::processBlock(AudioSampleBuffer& buffer, MidiBuffer& mid
 		// TODO: investigate how to get number of input channels really connected to the plugin ATM.
 		// It seems that getNumInputChannels() will always return max possible defined by JucePlugin_MaxNumInputChannels
 		// This solution is bad, because it iterates through all input buffers.
-		if (buffer.getMagnitude(channel, 0, buffer.getNumSamples()) == 0. && buffer.getMagnitude(channel + 1, 0, buffer.getNumSamples()) == 0.)
+		if (!isBlockInformative(buffer, channel / 2))
 		{
 			mGonioSegments[channel / 2] = GonioPoints<double>();
 			mSpectroSegments[channel / 2] = tomatl::dsp::SpectrumBlock();
 
 			continue;
 		}
-
+		
 		channelCount += 2;
 
 		float* l = buffer.getWritePointer(channel + 0);

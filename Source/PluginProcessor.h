@@ -135,6 +135,33 @@ private:
 		return 3;
 	}
 
+	bool isBlockInformative(AudioSampleBuffer& buffer, size_t pairIndex)
+	{
+		float magnitude = 0.;
+		size_t checksum = 0;
+
+		for (int i = 0; i < 2; ++i)
+		{
+			float* channelData = buffer.getWritePointer(pairIndex * 2 + i);
+
+			for (int s = 0; s < buffer.getNumSamples(); ++s)
+			{
+				magnitude = std::max(magnitude, std::abs(channelData[s]));
+
+				/*for (int b = 0; b < sizeof(float); ++b)
+				{
+					checksum = (checksum >> 1) + ((checksum & 1) << 15);
+					checksum += *((char*)(channelData + s) + b);
+					checksum &= 0xffff;
+				}*/
+			}
+		}
+
+		bool result = magnitude > 0.;
+
+		return result;
+	}
+
 	//==============================================================================
 	JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (AdmvAudioProcessor)
 };
