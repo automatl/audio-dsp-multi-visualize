@@ -34,12 +34,42 @@ AboutLayout::AboutLayout ()
     mLogoComponent->setName ("logoComonent");
 
     addAndMakeVisible (mNameLabel = new Label ("name label",
-                                               TRANS("ADMV")));
-    mNameLabel->setFont (Font (15.00f, Font::plain));
+                                               TRANS("SPT v0.1")));
+    mNameLabel->setFont (Font (15.00f, Font::bold));
     mNameLabel->setJustificationType (Justification::centredLeft);
     mNameLabel->setEditable (false, false, false);
     mNameLabel->setColour (TextEditor::textColourId, Colours::black);
     mNameLabel->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
+
+    addAndMakeVisible (mShortDescription = new Label ("short decription",
+                                                      TRANS("Sound Perception Toolkit is a small and lightweight sound visualization provider.")));
+    mShortDescription->setFont (Font (15.00f, Font::plain));
+    mShortDescription->setJustificationType (Justification::centredLeft);
+    mShortDescription->setEditable (false, false, false);
+    mShortDescription->setColour (TextEditor::textColourId, Colours::black);
+    mShortDescription->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
+
+    addAndMakeVisible (mHomePageButton = new HyperlinkButton (TRANS("au.tomatl.org"),
+                                                              URL ("http://au.tomatl.org/spt")));
+    mHomePageButton->setTooltip (TRANS("http://au.tomatl.org/spt"));
+    mHomePageButton->setButtonText (TRANS("au.tomatl.org"));
+
+    addAndMakeVisible (mCopyrightLabel = new Label ("copyright label",
+                                                    TRANS("(c) 2013-2014 Aleksandr Prokopchuk")));
+    mCopyrightLabel->setFont (Font (15.00f, Font::plain));
+    mCopyrightLabel->setJustificationType (Justification::centredLeft);
+    mCopyrightLabel->setEditable (false, false, false);
+    mCopyrightLabel->setColour (TextEditor::textColourId, Colours::black);
+    mCopyrightLabel->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
+
+    addAndMakeVisible (mGplNotice = new Label ("gpl notice",
+                                               TRANS("This program comes with ABSOLUTELY NO WARRANTY;\n"
+                                               "for details, visit http://www.gnu.org/licenses/gpl.html")));
+    mGplNotice->setFont (Font (13.60f, Font::plain));
+    mGplNotice->setJustificationType (Justification::centredLeft);
+    mGplNotice->setEditable (false, false, false);
+    mGplNotice->setColour (TextEditor::textColourId, Colours::black);
+    mGplNotice->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
 
     //[UserPreSize]
@@ -59,7 +89,7 @@ AboutLayout::AboutLayout ()
 	}
     //[/UserPreSize]
 
-    setSize (300, 200);
+    setSize (400, 200);
 
 
     //[Constructor] You can add your own custom stuff here..
@@ -75,6 +105,10 @@ AboutLayout::~AboutLayout()
 
     mLogoComponent = nullptr;
     mNameLabel = nullptr;
+    mShortDescription = nullptr;
+    mHomePageButton = nullptr;
+    mCopyrightLabel = nullptr;
+    mGplNotice = nullptr;
 
 
     //[Destructor]. You can add your own custom destruction code here..
@@ -98,6 +132,10 @@ void AboutLayout::resized()
 {
     mLogoComponent->setBounds (8, 8, 48, 48);
     mNameLabel->setBounds (56, 8, 150, 24);
+    mShortDescription->setBounds (8, 64, 328, 48);
+    mHomePageButton->setBounds (56, 32, 104, 24);
+    mCopyrightLabel->setBounds (8, 120, 328, 24);
+    mGplNotice->setBounds (8, 160, 384, 40);
     //[UserResized] Add your own custom resize handling here..
     //[/UserResized]
 }
@@ -120,16 +158,35 @@ BEGIN_JUCER_METADATA
 <JUCER_COMPONENT documentType="Component" className="AboutLayout" componentName=""
                  parentClasses="public Component" constructorParams="" variableInitialisers=""
                  snapPixels="8" snapActive="1" snapShown="1" overlayOpacity="0.330"
-                 fixedSize="1" initialWidth="300" initialHeight="200">
+                 fixedSize="1" initialWidth="400" initialHeight="200">
   <BACKGROUND backgroundColour="ffffffff"/>
   <GENERICCOMPONENT name="logoComonent" id="ec59b0594c99f155" memberName="mLogoComponent"
                     virtualName="" explicitFocusOrder="0" pos="8 8 48 48" class="ImageComponent"
                     params=""/>
   <LABEL name="name label" id="225b7f212e00136a" memberName="mNameLabel"
          virtualName="" explicitFocusOrder="0" pos="56 8 150 24" edTextCol="ff000000"
-         edBkgCol="0" labelText="ADMV" editableSingleClick="0" editableDoubleClick="0"
+         edBkgCol="0" labelText="SPT v0.1" editableSingleClick="0" editableDoubleClick="0"
          focusDiscardsChanges="0" fontname="Default font" fontsize="15"
-         bold="0" italic="0" justification="33"/>
+         bold="1" italic="0" justification="33"/>
+  <LABEL name="short decription" id="a229566877dd7eb5" memberName="mShortDescription"
+         virtualName="" explicitFocusOrder="0" pos="8 64 328 48" edTextCol="ff000000"
+         edBkgCol="0" labelText="Sound Perception Toolkit is a small and lightweight sound visualization provider."
+         editableSingleClick="0" editableDoubleClick="0" focusDiscardsChanges="0"
+         fontname="Default font" fontsize="15" bold="0" italic="0" justification="33"/>
+  <HYPERLINKBUTTON name="home page hyperlink" id="42aaf795d04f4f71" memberName="mHomePageButton"
+                   virtualName="" explicitFocusOrder="0" pos="56 32 104 24" tooltip="http://au.tomatl.org/spt"
+                   buttonText="au.tomatl.org" connectedEdges="0" needsCallback="0"
+                   radioGroupId="0" url="http://au.tomatl.org/spt"/>
+  <LABEL name="copyright label" id="3d0118a0d9125ccf" memberName="mCopyrightLabel"
+         virtualName="" explicitFocusOrder="0" pos="8 120 328 24" edTextCol="ff000000"
+         edBkgCol="0" labelText="(c) 2013-2014 Aleksandr Prokopchuk" editableSingleClick="0"
+         editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
+         fontsize="15" bold="0" italic="0" justification="33"/>
+  <LABEL name="gpl notice" id="7f4099be698ac09a" memberName="mGplNotice"
+         virtualName="" explicitFocusOrder="0" pos="8 160 384 40" edTextCol="ff000000"
+         edBkgCol="0" labelText="This program comes with ABSOLUTELY NO WARRANTY;&#10;for details, visit http://www.gnu.org/licenses/gpl.html"
+         editableSingleClick="0" editableDoubleClick="0" focusDiscardsChanges="0"
+         fontname="Default font" fontsize="13.6" bold="0" italic="0" justification="33"/>
 </JUCER_COMPONENT>
 
 END_JUCER_METADATA

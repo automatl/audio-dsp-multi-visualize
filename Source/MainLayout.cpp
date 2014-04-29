@@ -113,6 +113,12 @@ MainLayout::MainLayout (AdmvAudioProcessor* plugin)
 			label->removeColour(TextEditor::backgroundColourId);
 		}
 	}
+
+#if JUCE_DEBUG
+	mOptionsBtn->setVisible(true);
+#else
+	mOptionsBtn->setVisible(false);
+#endif
     //[/UserPreSize]
 
     setSize (991, 415);

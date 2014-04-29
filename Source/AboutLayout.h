@@ -58,6 +58,10 @@ private:
     //==============================================================================
     ScopedPointer<ImageComponent> mLogoComponent;
     ScopedPointer<Label> mNameLabel;
+    ScopedPointer<Label> mShortDescription;
+    ScopedPointer<HyperlinkButton> mHomePageButton;
+    ScopedPointer<Label> mCopyrightLabel;
+    ScopedPointer<Label> mGplNotice;
 
 
     //==============================================================================

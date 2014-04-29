@@ -39,8 +39,7 @@ public:
 		setColour(ToggleButton::textColourId, findColour(defaultText));
 		setColour(TextButton::textColourOffId, findColour(defaultText));
 		setColour(TextButton::textColourOnId, findColour(defaultText));
-		
-		//setColour(Button::)
+		setColour(HyperlinkButton::textColourId, findColour(alternativeText2));
 	}
 
 	virtual void drawTickBox(Graphics& g, Component& c, float x, float y, float w, float h,

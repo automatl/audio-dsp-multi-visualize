@@ -82,20 +82,22 @@ public:
 
 		options.content.setOwned(layout);
 
-		juce::Rectangle<int> area(0, 0, layout->getWidth(), layout->getHeight());
-		options.content->setSize(area.getWidth(), area.getHeight());
+		//juce::Rectangle<int> area(0, 0, layout->getWidth(), layout->getHeight());
+		options.content->setSize(layout->getWidth(), layout->getHeight());
 
 		options.dialogTitle = "About";
 		options.dialogBackgroundColour = LookAndFeel::getDefaultLookAndFeel().findColour(TomatlLookAndFeel::defaultBackground);
 		options.escapeKeyTriggersCloseButton = true;
 		options.useNativeTitleBar = false;
-		options.resizable = true;
+		options.resizable = false;
+		//options.content->get
 
 		const RectanglePlacement placement(RectanglePlacement::xRight + RectanglePlacement::yBottom + RectanglePlacement::doNotResize);
 
 		DialogWindow* dw = options.launchAsync();
 
-		dw->centreAroundComponent(this, layout->getWidth(), layout->getHeight());
+		//dw->centreAroundComponent(this, options.content->getRight(), options.content->getBottom());
+		dw->centreAroundComponent(this, dw->getWidth(), dw->getHeight());
 	}
 
     //[/UserMethods]
