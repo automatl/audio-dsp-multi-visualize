@@ -102,8 +102,6 @@ public:
 		
 		if (mLayout.isShowing())
 		{
-			mLayout.updateInputChannels(mParentProcessor->getCurrentInputCount());
-
 			if (!mParentProcessor->getState().mManualGoniometerScale)
 			{
 				mLayout.updateGonioScale(mParentProcessor->mLastGonioScale);

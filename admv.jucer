@@ -1,16 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<JUCERPROJECT id="Oj2Xh2" name="admv" projectType="audioplug" version="1.0.0"
-              bundleIdentifier="com.tomatl.admv" includeBinaryInAppConfig="1"
+<JUCERPROJECT id="Oj2Xh2" name="EasySSP" projectType="audioplug" version="0.1.0"
+              bundleIdentifier="com.automatl.essp" includeBinaryInAppConfig="1"
               buildVST="1" buildVST3="0" buildAU="1" buildRTAS="0" buildAAX="0"
-              pluginName="admv" pluginDesc="admv" pluginManufacturer="tomatl"
-              pluginManufacturerEmail="support@yourcompany.com" pluginManufacturerCode="Manu"
-              pluginCode="Plug" pluginChannelConfigs="{8, 8}" pluginIsSynth="0"
-              pluginWantsMidiIn="0" pluginProducesMidiOut="0" pluginSilenceInIsSilenceOut="1"
-              pluginEditorRequiresKeys="0" pluginAUExportPrefix="admvAU" pluginRTASCategory=""
-              aaxIdentifier="com.tomatl.admv" pluginAAXCategory="AAX_ePlugInCategory_Dynamics"
-              jucerVersion="3.1.0">
-  <MAINGROUP id="vsKEio" name="admv">
+              pluginName="EasySSP" pluginDesc="Easy Sound Space Perception"
+              pluginManufacturer="Automatl" pluginManufacturerEmail="support@yourcompany.com"
+              pluginManufacturerCode="Tmtl" pluginCode="ESSP" pluginChannelConfigs="{8, 8}"
+              pluginIsSynth="0" pluginWantsMidiIn="0" pluginProducesMidiOut="0"
+              pluginSilenceInIsSilenceOut="1" pluginEditorRequiresKeys="0"
+              pluginAUExportPrefix="esspAU" pluginRTASCategory="" aaxIdentifier="com.automatl.essp"
+              pluginAAXCategory="AAX_ePlugInCategory_Dynamics" jucerVersion="3.1.0"
+              companyWebsite="au.tomatl.org" companyEmail="au@tomatl.org">
+  <MAINGROUP id="vsKEio" name="EasySSP">
     <GROUP id="{3637573F-C1BE-6161-8382-C418FF0617B2}" name="Source">
       <FILE id="knfyVJ" name="AboutLayout.cpp" compile="1" resource="0" file="Source/AboutLayout.cpp"/>
       <FILE id="igGiTo" name="AboutLayout.h" compile="0" resource="0" file="Source/AboutLayout.h"/>
@@ -47,13 +48,13 @@
                        isDebug="1" optimisation="1" targetName="admv" useRuntimeLibDLL="0"
                        headerPath="$(SolutionDir)..\..\dsp-utility" binaryPath=""/>
         <CONFIGURATION name="Release(x86)" winWarningLevel="4" generateManifest="1"
-                       winArchitecture="32-bit" isDebug="0" optimisation="2" targetName="admv"
+                       winArchitecture="32-bit" isDebug="0" optimisation="3" targetName="admv"
                        useRuntimeLibDLL="0" headerPath="$(SolutionDir)..\..\dsp-utility"/>
         <CONFIGURATION name="Debug(amd64)" winWarningLevel="4" generateManifest="1"
                        winArchitecture="x64" isDebug="1" optimisation="1" targetName="admv"
                        useRuntimeLibDLL="0" headerPath="$(SolutionDir)..\..\dsp-utility"/>
         <CONFIGURATION name="Release(amd64)" winWarningLevel="4" generateManifest="1"
-                       winArchitecture="x64" isDebug="0" optimisation="2" targetName="admv"
+                       winArchitecture="x64" isDebug="0" optimisation="3" targetName="admv"
                        useRuntimeLibDLL="0" headerPath="$(SolutionDir)..\..\dsp-utility"/>
       </CONFIGURATIONS>
       <MODULEPATHS>

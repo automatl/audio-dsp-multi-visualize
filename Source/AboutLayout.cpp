@@ -34,7 +34,7 @@ AboutLayout::AboutLayout ()
     mLogoComponent->setName ("logoComonent");
 
     addAndMakeVisible (mNameLabel = new Label ("name label",
-                                               TRANS("SPT v0.1")));
+                                               TRANS("EasySSP v0.1")));
     mNameLabel->setFont (Font (15.00f, Font::bold));
     mNameLabel->setJustificationType (Justification::centredLeft);
     mNameLabel->setEditable (false, false, false);
@@ -42,7 +42,7 @@ AboutLayout::AboutLayout ()
     mNameLabel->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
     addAndMakeVisible (mShortDescription = new Label ("short decription",
-                                                      TRANS("Sound Perception Toolkit is a small and lightweight sound visualization provider.")));
+                                                      TRANS("Easy Sound Space Perception is a small and lightweight sound visualization tool.")));
     mShortDescription->setFont (Font (15.00f, Font::plain));
     mShortDescription->setJustificationType (Justification::centredLeft);
     mShortDescription->setEditable (false, false, false);
@@ -50,8 +50,8 @@ AboutLayout::AboutLayout ()
     mShortDescription->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
     addAndMakeVisible (mHomePageButton = new HyperlinkButton (TRANS("au.tomatl.org"),
-                                                              URL ("http://au.tomatl.org/spt")));
-    mHomePageButton->setTooltip (TRANS("http://au.tomatl.org/spt"));
+                                                              URL ("http://au.tomatl.org/essp")));
+    mHomePageButton->setTooltip (TRANS("http://au.tomatl.org/essp"));
     mHomePageButton->setButtonText (TRANS("au.tomatl.org"));
 
     addAndMakeVisible (mCopyrightLabel = new Label ("copyright label",
@@ -89,7 +89,7 @@ AboutLayout::AboutLayout ()
 	}
     //[/UserPreSize]
 
-    setSize (400, 200);
+    setSize (350, 200);
 
 
     //[Constructor] You can add your own custom stuff here..
@@ -158,25 +158,25 @@ BEGIN_JUCER_METADATA
 <JUCER_COMPONENT documentType="Component" className="AboutLayout" componentName=""
                  parentClasses="public Component" constructorParams="" variableInitialisers=""
                  snapPixels="8" snapActive="1" snapShown="1" overlayOpacity="0.330"
-                 fixedSize="1" initialWidth="400" initialHeight="200">
+                 fixedSize="1" initialWidth="350" initialHeight="200">
   <BACKGROUND backgroundColour="ffffffff"/>
   <GENERICCOMPONENT name="logoComonent" id="ec59b0594c99f155" memberName="mLogoComponent"
                     virtualName="" explicitFocusOrder="0" pos="8 8 48 48" class="ImageComponent"
                     params=""/>
   <LABEL name="name label" id="225b7f212e00136a" memberName="mNameLabel"
          virtualName="" explicitFocusOrder="0" pos="56 8 150 24" edTextCol="ff000000"
-         edBkgCol="0" labelText="SPT v0.1" editableSingleClick="0" editableDoubleClick="0"
-         focusDiscardsChanges="0" fontname="Default font" fontsize="15"
-         bold="1" italic="0" justification="33"/>
+         edBkgCol="0" labelText="EasySSP v0.1" editableSingleClick="0"
+         editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
+         fontsize="15" bold="1" italic="0" justification="33"/>
   <LABEL name="short decription" id="a229566877dd7eb5" memberName="mShortDescription"
          virtualName="" explicitFocusOrder="0" pos="8 64 328 48" edTextCol="ff000000"
-         edBkgCol="0" labelText="Sound Perception Toolkit is a small and lightweight sound visualization provider."
+         edBkgCol="0" labelText="Easy Sound Space Perception is a small and lightweight sound visualization tool."
          editableSingleClick="0" editableDoubleClick="0" focusDiscardsChanges="0"
          fontname="Default font" fontsize="15" bold="0" italic="0" justification="33"/>
   <HYPERLINKBUTTON name="home page hyperlink" id="42aaf795d04f4f71" memberName="mHomePageButton"
-                   virtualName="" explicitFocusOrder="0" pos="56 32 104 24" tooltip="http://au.tomatl.org/spt"
+                   virtualName="" explicitFocusOrder="0" pos="56 32 104 24" tooltip="http://au.tomatl.org/essp"
                    buttonText="au.tomatl.org" connectedEdges="0" needsCallback="0"
-                   radioGroupId="0" url="http://au.tomatl.org/spt"/>
+                   radioGroupId="0" url="http://au.tomatl.org/essp"/>
   <LABEL name="copyright label" id="3d0118a0d9125ccf" memberName="mCopyrightLabel"
          virtualName="" explicitFocusOrder="0" pos="8 120 328 24" edTextCol="ff000000"
          edBkgCol="0" labelText="(c) 2013-2014 Aleksandr Prokopchuk" editableSingleClick="0"

@@ -37,9 +37,9 @@
 
 namespace ProjectInfo
 {
-    const char* const  projectName    = "admv";
-    const char* const  versionString  = "1.0.0";
-    const int          versionNumber  = 0x10000;
+    const char* const  projectName    = "EasySSP";
+    const char* const  versionString  = "0.1.0";
+    const int          versionNumber  = 0x100;
 }
 
 #endif   // __APPHEADERFILE_OJ2XH2__

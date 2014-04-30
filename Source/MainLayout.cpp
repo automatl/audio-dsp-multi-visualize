@@ -30,14 +30,6 @@
 //==============================================================================
 MainLayout::MainLayout (AdmvAudioProcessor* plugin)
 {
-    addAndMakeVisible (mInputChannels = new Label ("Input Channels",
-                                                   TRANS("0")));
-    mInputChannels->setFont (Font (15.00f, Font::plain));
-    mInputChannels->setJustificationType (Justification::centredLeft);
-    mInputChannels->setEditable (false, false, false);
-    mInputChannels->setColour (TextEditor::textColourId, Colours::black);
-    mInputChannels->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
-
     addAndMakeVisible (mGonioManualScale = new ToggleButton ("Goniometer Manual Scale"));
     mGonioManualScale->setButtonText (TRANS("Manual scale"));
     mGonioManualScale->addListener (this);
@@ -71,14 +63,6 @@ MainLayout::MainLayout (AdmvAudioProcessor* plugin)
     mSpectroPlaceholder->setColour (Label::backgroundColourId, Colours::grey);
     mSpectroPlaceholder->setColour (TextEditor::textColourId, Colours::black);
     mSpectroPlaceholder->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
-
-    addAndMakeVisible (mChcLabel = new Label ("Channel Count",
-                                              TRANS("Input count:")));
-    mChcLabel->setFont (Font (15.00f, Font::plain));
-    mChcLabel->setJustificationType (Justification::centredLeft);
-    mChcLabel->setEditable (false, false, false);
-    mChcLabel->setColour (TextEditor::textColourId, Colours::black);
-    mChcLabel->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
     addAndMakeVisible (mSpectroFreqScale = new Slider ("Spectrum Frequency Scale"));
     mSpectroFreqScale->setRange (20, 30000, 0);
@@ -133,13 +117,11 @@ MainLayout::~MainLayout()
     //[Destructor_pre]. You can add your own custom destruction code here..
     //[/Destructor_pre]
 
-    mInputChannels = nullptr;
     mGonioManualScale = nullptr;
     mGonioScaleValue = nullptr;
     mSpectroMagnitudeScale = nullptr;
     mGonioPlaceholder = nullptr;
     mSpectroPlaceholder = nullptr;
-    mChcLabel = nullptr;
     mSpectroFreqScale = nullptr;
     mAboutButton = nullptr;
     mOptionsBtn = nullptr;
@@ -164,13 +146,11 @@ void MainLayout::paint (Graphics& g)
 
 void MainLayout::resized()
 {
-    mInputChannels->setBounds (336, 352, 24, 24);
     mGonioManualScale->setBounds (6, 352, 104, 24);
     mGonioScaleValue->setBounds (351, 0, 32, 360);
     mSpectroMagnitudeScale->setBounds (955, 0, 32, 360);
     mGonioPlaceholder->setBounds (9, 9, 342, 342);
     mSpectroPlaceholder->setBounds (383, 9, 568, 342);
-    mChcLabel->setBounds (256, 352, 88, 24);
     mSpectroFreqScale->setBounds (375, 355, 586, 24);
     mAboutButton->setBounds (960, 384, 24, 24);
     mOptionsBtn->setBounds (864, 384, 86, 24);
@@ -261,11 +241,6 @@ BEGIN_JUCER_METADATA
                  variableInitialisers="" snapPixels="8" snapActive="1" snapShown="1"
                  overlayOpacity="0.330" fixedSize="1" initialWidth="991" initialHeight="415">
   <BACKGROUND backgroundColour="ff1e1e1e"/>
-  <LABEL name="Input Channels" id="7b8ac8bacb5bd100" memberName="mInputChannels"
-         virtualName="" explicitFocusOrder="0" pos="336 352 24 24" edTextCol="ff000000"
-         edBkgCol="0" labelText="0" editableSingleClick="0" editableDoubleClick="0"
-         focusDiscardsChanges="0" fontname="Default font" fontsize="15"
-         bold="0" italic="0" justification="33"/>
   <TOGGLEBUTTON name="Goniometer Manual Scale" id="5481fd838f81a9d7" memberName="mGonioManualScale"
                 virtualName="" explicitFocusOrder="0" pos="6 352 104 24" buttonText="Manual scale"
                 connectedEdges="0" needsCallback="1" radioGroupId="0" state="0"/>
@@ -287,11 +262,6 @@ BEGIN_JUCER_METADATA
          edTextCol="ff000000" edBkgCol="0" labelText="Spectrometer&#10;"
          editableSingleClick="0" editableDoubleClick="0" focusDiscardsChanges="0"
          fontname="Default font" fontsize="15" bold="0" italic="0" justification="36"/>
-  <LABEL name="Channel Count" id="b9537e4c0c585d02" memberName="mChcLabel"
-         virtualName="" explicitFocusOrder="0" pos="256 352 88 24" edTextCol="ff000000"
-         edBkgCol="0" labelText="Input count:" editableSingleClick="0"
-         editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
-         fontsize="15" bold="0" italic="0" justification="33"/>
   <SLIDER name="Spectrum Frequency Scale" id="fea54c0326f58da2" memberName="mSpectroFreqScale"
           virtualName="" explicitFocusOrder="0" pos="375 355 586 24" min="20"
           max="30000" int="0" style="TwoValueHorizontal" textBoxPos="NoTextBox"

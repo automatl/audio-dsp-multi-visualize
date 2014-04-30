@@ -48,7 +48,6 @@ public:
 
     //==============================================================================
     //[UserMethods]     -- You can add your own custom methods in this section.
-	void updateInputChannels(size_t value) { mInputChannels.get()->setText(String((juce::uint32)value), dontSendNotification); }
 
 	void updateFromState(const AdmvPluginState& state)
 	{
@@ -115,13 +114,11 @@ private:
     //[/UserVariables]
 
     //==============================================================================
-    ScopedPointer<Label> mInputChannels;
     ScopedPointer<ToggleButton> mGonioManualScale;
     ScopedPointer<Slider> mGonioScaleValue;
     ScopedPointer<Slider> mSpectroMagnitudeScale;
     ScopedPointer<Label> mGonioPlaceholder;
     ScopedPointer<Label> mSpectroPlaceholder;
-    ScopedPointer<Label> mChcLabel;
     ScopedPointer<Slider> mSpectroFreqScale;
     ScopedPointer<TextButton> mAboutButton;
     ScopedPointer<TextButton> mOptionsBtn;
