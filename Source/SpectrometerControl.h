@@ -14,7 +14,7 @@
 #include "../JuceLibraryCode/JuceHeader.h"
 #include "TomatlImageType.h"
 #include "ILateInitComponent.h"
-
+#include <map>
 //==============================================================================
 /*
 */
@@ -114,7 +114,6 @@ public:
 		subject.Y.mHigh = mFreqGrid.fullScaleYToDb(mFreqGrid.getHeight() - mFreqGrid.getHeight() / 100. * state.mSpectrometerMagnitudeScale.second);
 	}
 
-
 	void paint(Graphics& g)
 	{
 		clearArgbImage(mBuffer);
@@ -159,86 +158,64 @@ public:
 			mFreqGrid.updateSampleRate(block.mSampleRate);
 			mFreqGrid.updateBinCount(block.mLength);
 
-			int lastX = 0;
-			int lastY = 0;
-			int lastDx = 0;
-
-			int y0, y1;
-			y0 = y1 = mFreqGrid.minusInfToY();
-
 			Path p;
-			p.startNewSubPath(0, mFreqGrid.minusInfToY());
 
-			bool firstSignificantPointAdded = false;
-			
-			// TODO: omit DC offset (f0 == 0)
-			for (int i = 0; i < block.mLength - 1; i += 2)
+			p.startNewSubPath(mFreqGrid.lowestVisibleFreqToX(), mFreqGrid.minusInfToY());			
+
+			std::map<int, double> points;
+
+			double lastX = mFreqGrid.lowestVisibleFreqToX();
+			double lastY = mFreqGrid.minusInfToY();
+
+			for (int i = 0; i < block.mLength; ++i)
 			{
-				// TODO: maybe implement some clever decimation instead of just choosing max magnitude value
-				double f0 = mFreqGrid.binNumberToFrequency(block.mData[i + 0].first);
-				int x0 = mFreqGrid.freqToX(f0 > 0 ? f0 : 0.000001);
-				y0 = std::min(y0, mFreqGrid.dbToY(TOMATL_TO_DB(block.mData[i + 0].second))); // this min is really max as y coord is top-to-bottom
+				double y0 = mFreqGrid.dbToY(TOMATL_TO_DB(block.mData[i].second));
+				double f0 = mFreqGrid.binNumberToFrequency(block.mData[i].first);
+				double x0 = mFreqGrid.freqToX(f0);
 
-				double f1 = mFreqGrid.binNumberToFrequency(block.mData[i + 1].first);
-				int x1 = mFreqGrid.freqToX(f1);
-				y1 = std::min(y1, mFreqGrid.dbToY(TOMATL_TO_DB(block.mData[i + 1].second))); // this min is really max as y coord is top-to-bottom
-
-				if (!mFreqGrid.isFrequencyVisible(f0) && !mFreqGrid.isFrequencyVisible(f1))
+				if (!mFreqGrid.isFrequencyVisible(f0))
 				{
 					continue;
 				}
 
-				if (!firstSignificantPointAdded)
+				if (x0 - lastX >= 1 || x0 == mFreqGrid.lowestVisibleFreqToX())
 				{
-					p.lineTo(mFreqGrid.freqToX(mFreqGrid.binNumberToFrequency(0)), y0);
+					points[x0] = y0;
 
-					firstSignificantPointAdded = true;
+					lastX = x0;
+					lastY = y0;
 				}
-
-				
-				if (x0 - lastX > 5)
+				else if (f0 > 0)
 				{
-					lastDx = x0 - lastX;
+					points[x0] = std::min(points[x0], y0);
 
-					p.quadraticTo(x0, y0, x1, y1);
-
-					lastX = x1;
-					lastY = y1;
-
-					y0 = y1 = mFreqGrid.minusInfToY();
-				}
-				else if (x0 - lastX >= 1)
-				{
-					lastDx = x0 - lastX;
-
-					p.lineTo(x0, y0);
-					p.lineTo(x1, y1);
-					
-					lastX = x1;
-					lastY = y1;
-
-					y0 = y1 = mFreqGrid.minusInfToY();
+					lastX = x0;
+					lastY = y0;
 				}
 			}
+			
+			if (points.size() > 0)
+			{
+				if (points.begin()->first != mFreqGrid.lowestVisibleFreqToX())
+				{
+					p.lineTo(mFreqGrid.lowestVisibleFreqToX(), points.begin()->second);
+				}
 
-			// Our behaviour on how to approximate curve where we have no data is dependent on frequency -
-			// on high frequencies we momentarily decay to zero,
-			// on low frequencies we're drawing horizontal line till the end
-			// This is kind of logical thing to do, as our frequency resolution decreases with the frequency and
-			// each next bin becomes wider
-			if (lastDx < 5)
-			{
-				p.lineTo(p.getCurrentPosition().getX(), mFreqGrid.dbToY(-1000.));
+				for (auto i = points.begin(); i != points.end(); ++i)
+				{
+					p.lineTo(i->first, i->second);
+				}
 			}
-			else
+			
+			if (points.size() > 0)
 			{
-				p.lineTo(mFreqGrid.getWidth(), p.getCurrentPosition().getY());
+				p.lineTo((--points.end())->first, mFreqGrid.minusInfToY());
 			}
 
 			p.lineTo(mFreqGrid.getWidth(), mFreqGrid.getHeight() - 1);
 			p.lineTo(0, mFreqGrid.getHeight() - 1);
 
-			paths.push_back(std::pair<Path, int>(p, block.mIndex));
+			paths.push_back(std::pair<Path, int>(p.createPathWithRoundedCorners(5.f), block.mIndex));
 		}
 
 		for (int i = 0; i < paths.size(); ++i)
@@ -259,7 +236,8 @@ public:
 			if (mFreqGrid.containsPoint(mouseLocation.getX(), mouseLocation.getY()))
 			{
 				buffer.setColour(LookAndFeel::getDefaultLookAndFeel().findColour(TomatlLookAndFeel::alternativeText1).withAlpha(0.8f));
-				buffer.drawFittedText(mFreqGrid.getPointNotation(mouseLocation.getX(), mouseLocation.getY()).c_str(), juce::Rectangle<int>(5, 5, 200, 20), Justification::topLeft, 1);
+				buffer.setFont(Font(Font::getDefaultMonospacedFontName(), 12, Font::plain));
+				buffer.drawFittedText(mFreqGrid.getPointNotation(mouseLocation.getX(), mouseLocation.getY()).c_str(), juce::Rectangle<int>(8, 8, 300, 20), Justification::topLeft, 1);
 			}
 		}
 		
