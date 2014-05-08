@@ -30,10 +30,6 @@
 //==============================================================================
 MainLayout::MainLayout (AdmvAudioProcessor* plugin)
 {
-    addAndMakeVisible (mGonioManualScale = new ToggleButton ("Goniometer Manual Scale"));
-    mGonioManualScale->setButtonText (TRANS("Manual scale"));
-    mGonioManualScale->addListener (this);
-
     addAndMakeVisible (mGonioScaleValue = new Slider ("Gonio Scale Value"));
     mGonioScaleValue->setRange (-72, 0, 0);
     mGonioScaleValue->setSliderStyle (Slider::LinearVertical);
@@ -98,11 +94,8 @@ MainLayout::MainLayout (AdmvAudioProcessor* plugin)
 		}
 	}
 
-#if JUCE_DEBUG
 	mOptionsBtn->setVisible(true);
-#else
-	mOptionsBtn->setVisible(false);
-#endif
+
     //[/UserPreSize]
 
     setSize (991, 415);
@@ -117,7 +110,6 @@ MainLayout::~MainLayout()
     //[Destructor_pre]. You can add your own custom destruction code here..
     //[/Destructor_pre]
 
-    mGonioManualScale = nullptr;
     mGonioScaleValue = nullptr;
     mSpectroMagnitudeScale = nullptr;
     mGonioPlaceholder = nullptr;
@@ -146,51 +138,17 @@ void MainLayout::paint (Graphics& g)
 
 void MainLayout::resized()
 {
-    mGonioManualScale->setBounds (6, 352, 104, 24);
-    mGonioScaleValue->setBounds (351, 0, 32, 360);
-    mSpectroMagnitudeScale->setBounds (955, 0, 32, 360);
+    mGonioScaleValue->setBounds (351, 9, 32, 342);
+    mSpectroMagnitudeScale->setBounds (955, 9, 32, 342);
     mGonioPlaceholder->setBounds (9, 9, 342, 342);
     mSpectroPlaceholder->setBounds (383, 9, 568, 342);
-    mSpectroFreqScale->setBounds (375, 355, 586, 24);
+    mSpectroFreqScale->setBounds (383, 355, 568, 24);
     mAboutButton->setBounds (960, 384, 24, 24);
     mOptionsBtn->setBounds (864, 384, 86, 24);
     //[UserResized] Add your own custom resize handling here..
 	mSpectroFreqScale->setRange(0, 100); // simple percentage here, all scaling is handling by the client
 	mSpectroMagnitudeScale->setRange(0, 100);
     //[/UserResized]
-}
-
-void MainLayout::buttonClicked (Button* buttonThatWasClicked)
-{
-    //[UserbuttonClicked_Pre]
-    //[/UserbuttonClicked_Pre]
-
-    if (buttonThatWasClicked == mGonioManualScale)
-    {
-        //[UserButtonCode_mGonioManualScale] -- add your button handler code here..
-		mParentProcessor->setManualGonioScaleEnabled(buttonThatWasClicked->getToggleState());
-        //[/UserButtonCode_mGonioManualScale]
-    }
-    else if (buttonThatWasClicked == mAboutButton)
-    {
-        //[UserButtonCode_mAboutButton] -- add your button handler code here..
-		showAboutDialog();
-        //[/UserButtonCode_mAboutButton]
-    }
-    else if (buttonThatWasClicked == mOptionsBtn)
-    {
-        //[UserButtonCode_mOptionsBtn] -- add your button handler code here..
-		// TODO: implement options dialog
-		AlertWindow::showMessageBoxAsync(AlertWindow::InfoIcon,
-			"Not implemented",
-			"Option dialog goes here",
-			"ok",
-			this);
-        //[/UserButtonCode_mOptionsBtn]
-    }
-
-    //[UserbuttonClicked_Post]
-    //[/UserbuttonClicked_Post]
 }
 
 void MainLayout::sliderValueChanged (Slider* sliderThatWasMoved)
@@ -221,6 +179,28 @@ void MainLayout::sliderValueChanged (Slider* sliderThatWasMoved)
     //[/UsersliderValueChanged_Post]
 }
 
+void MainLayout::buttonClicked (Button* buttonThatWasClicked)
+{
+    //[UserbuttonClicked_Pre]
+    //[/UserbuttonClicked_Pre]
+
+    if (buttonThatWasClicked == mAboutButton)
+    {
+        //[UserButtonCode_mAboutButton] -- add your button handler code here..
+		showAboutDialog();
+        //[/UserButtonCode_mAboutButton]
+    }
+    else if (buttonThatWasClicked == mOptionsBtn)
+    {
+        //[UserButtonCode_mOptionsBtn] -- add your button handler code here..
+		showPreferencesDialog();
+        //[/UserButtonCode_mOptionsBtn]
+    }
+
+    //[UserbuttonClicked_Post]
+    //[/UserbuttonClicked_Post]
+}
+
 
 
 //[MiscUserCode] You can add your own definitions of your custom methods or any other code here...
@@ -241,15 +221,12 @@ BEGIN_JUCER_METADATA
                  variableInitialisers="" snapPixels="8" snapActive="1" snapShown="1"
                  overlayOpacity="0.330" fixedSize="1" initialWidth="991" initialHeight="415">
   <BACKGROUND backgroundColour="ff1e1e1e"/>
-  <TOGGLEBUTTON name="Goniometer Manual Scale" id="5481fd838f81a9d7" memberName="mGonioManualScale"
-                virtualName="" explicitFocusOrder="0" pos="6 352 104 24" buttonText="Manual scale"
-                connectedEdges="0" needsCallback="1" radioGroupId="0" state="0"/>
   <SLIDER name="Gonio Scale Value" id="759c99b88517019b" memberName="mGonioScaleValue"
-          virtualName="" explicitFocusOrder="0" pos="351 0 32 360" min="-72"
+          virtualName="" explicitFocusOrder="0" pos="351 9 32 342" min="-72"
           max="0" int="0" style="LinearVertical" textBoxPos="NoTextBox"
           textBoxEditable="0" textBoxWidth="80" textBoxHeight="20" skewFactor="1"/>
   <SLIDER name="Spectrum Magnitude Scale" id="c469fe133993978c" memberName="mSpectroMagnitudeScale"
-          virtualName="" explicitFocusOrder="0" pos="955 0 32 360" min="-72"
+          virtualName="" explicitFocusOrder="0" pos="955 9 32 342" min="-72"
           max="0" int="0" style="TwoValueVertical" textBoxPos="NoTextBox"
           textBoxEditable="1" textBoxWidth="80" textBoxHeight="20" skewFactor="1"/>
   <LABEL name="Goniometer" id="cc50c59b667e6fe0" memberName="mGonioPlaceholder"
@@ -263,7 +240,7 @@ BEGIN_JUCER_METADATA
          editableSingleClick="0" editableDoubleClick="0" focusDiscardsChanges="0"
          fontname="Default font" fontsize="15" bold="0" italic="0" justification="36"/>
   <SLIDER name="Spectrum Frequency Scale" id="fea54c0326f58da2" memberName="mSpectroFreqScale"
-          virtualName="" explicitFocusOrder="0" pos="375 355 586 24" min="20"
+          virtualName="" explicitFocusOrder="0" pos="383 355 568 24" min="20"
           max="30000" int="0" style="TwoValueHorizontal" textBoxPos="NoTextBox"
           textBoxEditable="1" textBoxWidth="80" textBoxHeight="20" skewFactor="1"/>
   <TEXTBUTTON name="about button" id="268c0f6cf9c85fec" memberName="mAboutButton"

@@ -114,6 +114,11 @@ public:
 		subject.Y.mHigh = mFreqGrid.fullScaleYToDb(mFreqGrid.getHeight() - mFreqGrid.getHeight() / 100. * state.mSpectrometerMagnitudeScale.second);
 	}
 
+	bool shouldHoldLastFrame()
+	{
+		return mParentProcessor->getState().mSpectrometerReleaseSpeed == std::numeric_limits<double>::infinity();
+	}
+
 	void paint(Graphics& g)
 	{
 		clearArgbImage(mBuffer);
@@ -148,7 +153,9 @@ public:
 				continue;
 			}
 
-			if (block.mFramesRendered > TOMATL_FPS)
+			// TODO: implement correct last frame holding support (should work with resize)
+			// maybe some local storage of spectro-blocks which can be drawn if no newer/eligible data
+			if (block.mFramesRendered > TOMATL_FPS && !shouldHoldLastFrame())
 			{
 				continue;
 			}
@@ -225,8 +232,11 @@ public:
 			buffer.setColour(mParentProcessor->getStereoPairColor(paths[i].second));
 			buffer.strokePath(p, PathStrokeType(1.f));
 			
-			buffer.setColour(mParentProcessor->getStereoPairColor(paths[i].second).withAlpha((float)0.1));
-			buffer.fillPath(p);
+			if (mParentProcessor->getState().mSpectrumFillMode == AdmvPluginState::spectrumFillWithTransparency)
+			{
+				buffer.setColour(mParentProcessor->getStereoPairColor(paths[i].second).withAlpha((float)0.1));
+				buffer.fillPath(p);
+			}
 		}
 
 		if (isMouseOver())

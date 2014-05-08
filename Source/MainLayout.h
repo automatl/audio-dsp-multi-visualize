@@ -25,6 +25,7 @@
 #include "PluginProcessor.h"
 #include "TomatlLookAndFeel.h"
 #include "AboutLayout.h"
+#include "PreferencesLayout.h"
 //[/Headers]
 
 
@@ -38,8 +39,8 @@
                                                                     //[/Comments]
 */
 class MainLayout  : public Component,
-                    public ButtonListener,
-                    public SliderListener
+                    public SliderListener,
+                    public ButtonListener
 {
 public:
     //==============================================================================
@@ -51,7 +52,6 @@ public:
 
 	void updateFromState(const AdmvPluginState& state)
 	{
-		mGonioManualScale.get()->setToggleState(state.mManualGoniometerScale, dontSendNotification);
 		mGonioScaleValue.get()->setValue(TOMATL_TO_DB(state.mManualGoniometerScaleValue), dontSendNotification);
 		mGonioScaleValue.get()->setEnabled(state.mManualGoniometerScale);
 		mSpectroMagnitudeScale.get()->setMinValue(state.mSpectrometerMagnitudeScale.first, dontSendNotification);
@@ -74,37 +74,43 @@ public:
 		mGonioScaleValue.get()->setValue(TOMATL_TO_DB(1. / scale), dontSendNotification);
 	}
 
-	void showAboutDialog()
+	void showDefaultDialog(Component* contents, std::wstring caption)
 	{
 		DialogWindow::LaunchOptions options;
-		AboutLayout* layout = new AboutLayout();
 
-		options.content.setOwned(layout);
+		options.content.setOwned(contents);
 
-		//juce::Rectangle<int> area(0, 0, layout->getWidth(), layout->getHeight());
-		options.content->setSize(layout->getWidth(), layout->getHeight());
+		options.content->setSize(contents->getWidth(), contents->getHeight());
 
-		options.dialogTitle = "About";
+		options.dialogTitle = caption.c_str();
 		options.dialogBackgroundColour = LookAndFeel::getDefaultLookAndFeel().findColour(TomatlLookAndFeel::defaultBackground);
 		options.escapeKeyTriggersCloseButton = true;
 		options.useNativeTitleBar = false;
 		options.resizable = false;
-		//options.content->get
 
 		const RectanglePlacement placement(RectanglePlacement::xRight + RectanglePlacement::yBottom + RectanglePlacement::doNotResize);
 
 		DialogWindow* dw = options.launchAsync();
 
-		//dw->centreAroundComponent(this, options.content->getRight(), options.content->getBottom());
 		dw->centreAroundComponent(this, dw->getWidth(), dw->getHeight());
+	}
+
+	void showAboutDialog()
+	{
+		showDefaultDialog(new AboutLayout(), L"About");
+	}
+
+	void showPreferencesDialog()
+	{
+		showDefaultDialog(new PreferencesLayout(mParentProcessor), L"Preferences");
 	}
 
     //[/UserMethods]
 
     void paint (Graphics& g);
     void resized();
-    void buttonClicked (Button* buttonThatWasClicked);
     void sliderValueChanged (Slider* sliderThatWasMoved);
+    void buttonClicked (Button* buttonThatWasClicked);
 
 
 
@@ -114,7 +120,6 @@ private:
     //[/UserVariables]
 
     //==============================================================================
-    ScopedPointer<ToggleButton> mGonioManualScale;
     ScopedPointer<Slider> mGonioScaleValue;
     ScopedPointer<Slider> mSpectroMagnitudeScale;
     ScopedPointer<Label> mGonioPlaceholder;

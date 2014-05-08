@@ -13,14 +13,18 @@
               companyWebsite="au.tomatl.org" companyEmail="au@tomatl.org">
   <MAINGROUP id="vsKEio" name="EasySSP">
     <GROUP id="{3637573F-C1BE-6161-8382-C418FF0617B2}" name="Source">
-      <FILE id="knfyVJ" name="AboutLayout.cpp" compile="1" resource="0" file="Source/AboutLayout.cpp"/>
-      <FILE id="igGiTo" name="AboutLayout.h" compile="0" resource="0" file="Source/AboutLayout.h"/>
       <GROUP id="{4A507273-FCB2-DED6-7553-5B41AC7C584D}" name="img">
         <FILE id="rfBEaA" name="admv-icon.png" compile="0" resource="1" file="Source/img/admv-icon.png"/>
         <FILE id="f5nlIS" name="check_check.png" compile="0" resource="1" file="Source/img/check_check.png"/>
         <FILE id="Lr7BBJ" name="check_false.png" compile="0" resource="1" file="Source/img/check_false.png"/>
         <FILE id="f9apSQ" name="check_true.png" compile="0" resource="1" file="Source/img/check_true.png"/>
       </GROUP>
+      <FILE id="cZAbvW" name="PreferencesLayout.cpp" compile="1" resource="0"
+            file="Source/PreferencesLayout.cpp"/>
+      <FILE id="YbBX0o" name="PreferencesLayout.h" compile="0" resource="0"
+            file="Source/PreferencesLayout.h"/>
+      <FILE id="knfyVJ" name="AboutLayout.cpp" compile="1" resource="0" file="Source/AboutLayout.cpp"/>
+      <FILE id="igGiTo" name="AboutLayout.h" compile="0" resource="0" file="Source/AboutLayout.h"/>
       <FILE id="Mh4kvL" name="ILateInitComponent.h" compile="0" resource="0"
             file="Source/ILateInitComponent.h"/>
       <FILE id="RmvgAU" name="PluginState.h" compile="0" resource="0" file="Source/PluginState.h"/>

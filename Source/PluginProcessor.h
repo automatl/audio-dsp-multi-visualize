@@ -74,8 +74,12 @@ public:
 
 	void setManualGonioScaleEnabled(bool value) { TOMATL_PLUGIN_SET_PROPERTY(mManualGoniometerScale, value); }
 	void setManualGonioScaleValue(double value) { TOMATL_PLUGIN_SET_PROPERTY(mManualGoniometerScaleValue, value); }
+	void setManualGonioScaleRelease(double value) { TOMATL_PLUGIN_SET_PROPERTY(mGoniometerScaleAttackRelease.second, value); }
 	void setSpectroMagnitudeScale(std::pair<double, double> value) { TOMATL_PLUGIN_SET_PROPERTY(mSpectrometerMagnitudeScale, value); }
 	void setSpectroFrequencyScale(std::pair<double, double> value) { TOMATL_PLUGIN_SET_PROPERTY(mSpectrometerFrequencyScale, value); }
+	void setSpectroReleaseSpeed(double value) { TOMATL_PLUGIN_SET_PROPERTY(mSpectrometerReleaseSpeed, value); }
+	void setSpectroFillMode(AdmvPluginState::SpectrumFillMode value) { TOMATL_PLUGIN_SET_PROPERTY(mSpectrumFillMode, value); }
+	void setOutputMode(AdmvPluginState::OutputMode value) { TOMATL_PLUGIN_SET_PROPERTY(mOutputMode, value); }
 
 	//==============================================================================
 	void getStateInformation (MemoryBlock& destData);
@@ -84,7 +88,7 @@ public:
 
 	size_t getCurrentInputCount() { return mCurrentInputCount; }
 
-	// TODO: host can stop to supply blocks, and not call releaseResources(), so this on isn't working properly
+	// TODO: host can stop to supply blocks, and not call releaseResources(), so this isn't working properly
 	bool isCurrentlyProcessing() { return mGonioSegments != NULL; }
 
 	Colour getStereoPairColor(int index) 
@@ -132,7 +136,7 @@ private:
 
 	uint8 getStateVersion()
 	{
-		return 3;
+		return 4;
 	}
 
 	bool isBlockInformative(AudioSampleBuffer& buffer, size_t pairIndex)

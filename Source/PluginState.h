@@ -15,6 +15,18 @@
 
 struct AdmvPluginState
 {
+	enum OutputMode
+	{
+		outputNoChange = 0,
+		outputMute
+	};
+
+	enum SpectrumFillMode
+	{
+		spectrumFillWithTransparency = 0,
+		spectrumFillNone
+	};
+
 	AdmvPluginState()
 	{
 	}
@@ -24,6 +36,9 @@ struct AdmvPluginState
 	double mManualGoniometerScaleValue = 1.0;
 	std::pair<double, double> mSpectrometerMagnitudeScale = std::pair<double, double>(0, 100);
 	std::pair<double, double> mSpectrometerFrequencyScale = std::pair<double, double>(0, 100);
+	double mSpectrometerReleaseSpeed = 1940;
+	OutputMode mOutputMode = outputNoChange;
+	SpectrumFillMode mSpectrumFillMode = spectrumFillWithTransparency;
 };
 
 

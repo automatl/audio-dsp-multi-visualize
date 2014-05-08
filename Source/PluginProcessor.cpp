@@ -127,13 +127,7 @@ void AdmvAudioProcessor::changeProgramName (int index, const String& newName)
 //==============================================================================
 void AdmvAudioProcessor::prepareToPlay (double sampleRate, int samplesPerBlock)
 {
-	std::pair<double, double> spectroCalcAttackRelease(0.1, 1000.);
-
 	size_t fftSize = 2048;
-
-	// Because fft bin magnitude would change every (sampleRate / fftSize), so its sample rate is not equal to signal sample rate!
-	spectroCalcAttackRelease.first = tomatl::dsp::EnvelopeWalker::calculateCoeff(100, sampleRate / fftSize);
-	spectroCalcAttackRelease.second = tomatl::dsp::EnvelopeWalker::calculateCoeff(900, sampleRate / fftSize);
 
 	mMaxStereoPairCount = JucePlugin_MaxNumInputChannels / 2;
 
@@ -144,7 +138,7 @@ void AdmvAudioProcessor::prepareToPlay (double sampleRate, int samplesPerBlock)
 
 	for (int i = 0; i < mMaxStereoPairCount; ++i)
 	{
-		mSpectroCalcs.push_back(new tomatl::dsp::SpectroCalculator<double>(spectroCalcAttackRelease, i, fftSize));
+		mSpectroCalcs.push_back(new tomatl::dsp::SpectroCalculator<double>(sampleRate, std::pair<double, double>(10, getState().mSpectrometerReleaseSpeed), i, fftSize));
 	}
 
 	mSpectroSegments = new tomatl::dsp::SpectrumBlock[mMaxStereoPairCount];
@@ -210,7 +204,8 @@ void AdmvAudioProcessor::processBlock(AudioSampleBuffer& buffer, MidiBuffer& mid
 			cp[0] = l[i];
 			cp[1] = r[i];
 
-			tomatl::dsp::SpectrumBlock spectroResult = mSpectroCalcs[channel / 2]->process((double*)&cp, getSampleRate());
+			mSpectroCalcs[channel / 2]->checkSampleRate(getSampleRate());
+			tomatl::dsp::SpectrumBlock spectroResult = mSpectroCalcs[channel / 2]->process((double*)&cp);
 
 			if (res != NULL)
 			{
@@ -227,12 +222,19 @@ void AdmvAudioProcessor::processBlock(AudioSampleBuffer& buffer, MidiBuffer& mid
 	
 	mCurrentInputCount = channelCount;
 
-	// In case we have more outputs than inputs, we'll clear any output
-	// channels that didn't contain input data, (because these aren't
-	// guaranteed to be empty - they may contain garbage).
-	for (int i = getNumInputChannels(); i < getNumOutputChannels(); ++i)
+	if (getState().mOutputMode == AdmvPluginState::outputMute)
 	{
-		buffer.clear (i, 0, buffer.getNumSamples());
+		buffer.clear();
+	}
+	else
+	{
+		// In case we have more outputs than inputs, we'll clear any output
+		// channels that didn't contain input data, (because these aren't
+		// guaranteed to be empty - they may contain garbage).
+		for (int i = getNumInputChannels(); i < getNumOutputChannels(); ++i)
+		{
+			buffer.clear(i, 0, buffer.getNumSamples());
+		}
 	}
 }
 
@@ -248,6 +250,12 @@ void AdmvAudioProcessor::makeCurrentStateEffective()
 	{
 		mGonioCalcs[i]->setCustomScaleEnabled(mState.mManualGoniometerScale);
 		mGonioCalcs[i]->setCustomScale(mState.mManualGoniometerScaleValue);
+		mGonioCalcs[i]->setReleaseSpeed(mState.mGoniometerScaleAttackRelease.second);
+	}
+
+	for (int i = 0; i < mSpectroCalcs.size(); ++i)
+	{
+		mSpectroCalcs[i]->setReleaseSpeed(mState.mSpectrometerReleaseSpeed);
 	}
 
 	if (getActiveEditor() != NULL)
