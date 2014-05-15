@@ -38,7 +38,7 @@ private:
 
 		g.setColour(Colours::darkgrey);
 		g.drawRect(getLocalBounds(), 2.f);
-
+		
 		g.setColour(Colours::darkgrey.withAlpha(0.3f));
 		for (int i = 0; i < mFreqGrid.getFreqLineCount(); ++i)
 		{
@@ -83,7 +83,8 @@ private:
 	}
 
 public:
-	SpectrometerControl(AdmvAudioProcessor* parent) : mFreqGrid(tomatl::dsp::Bound2D<double>(20., 30000., -72., 0.))
+	SpectrometerControl(AdmvAudioProcessor* parent) : 
+		mFreqGrid(tomatl::dsp::Bound2D<double>(20., 30000., -72., 0.))
 	{
 		mParentProcessor = parent;
 	}
