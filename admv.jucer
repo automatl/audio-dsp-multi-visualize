@@ -2,15 +2,15 @@
 
 <JUCERPROJECT id="Oj2Xh2" name="EasySSP" projectType="audioplug" version="0.1.0"
               bundleIdentifier="com.automatl.essp" includeBinaryInAppConfig="1"
-              buildVST="1" buildVST3="0" buildAU="1" buildRTAS="0" buildAAX="0"
-              pluginName="EasySSP" pluginDesc="Easy Sound Space Perception"
+              buildVST="0" buildLV2="1" buildVST3="1" buildStandalone="1" buildAU="1"
+              buildRTAS="0" buildAAX="0" pluginName="EasySSP" pluginDesc="Easy Sound Space Perception"
               pluginManufacturer="Automatl" pluginManufacturerEmail="support@yourcompany.com"
               pluginManufacturerCode="Tmtl" pluginCode="ESSP" pluginChannelConfigs="{8, 8}"
               pluginIsSynth="0" pluginWantsMidiIn="0" pluginProducesMidiOut="0"
               pluginSilenceInIsSilenceOut="1" pluginEditorRequiresKeys="0"
               pluginAUExportPrefix="esspAU" pluginRTASCategory="" aaxIdentifier="com.automatl.essp"
-              pluginAAXCategory="AAX_ePlugInCategory_Dynamics" jucerVersion="3.1.0"
-              companyWebsite="au.tomatl.org" companyEmail="au@tomatl.org">
+              pluginAAXCategory="2" companyWebsite="au.tomatl.org" companyEmail="au@tomatl.org"
+              pluginFormats="buildVST3,buildAU,buildStandalone" jucerFormatVersion="1">
   <MAINGROUP id="vsKEio" name="EasySSP">
     <GROUP id="{3637573F-C1BE-6161-8382-C418FF0617B2}" name="Source">
       <GROUP id="{4A507273-FCB2-DED6-7553-5B41AC7C584D}" name="img">
@@ -46,20 +46,11 @@
     </GROUP>
   </MAINGROUP>
   <EXPORTFORMATS>
-    <VS2013 targetFolder="Builds/VisualStudio2013" vstFolder="c:\SDKs\vstsdk2.4">
+    <LINUX_MAKE targetFolder="Builds/Linux" extraCompilerFlags="-I../../dsp-utility -fpermissive -std=c++11">
       <CONFIGURATIONS>
-        <CONFIGURATION name="Debug(x86)" winWarningLevel="4" generateManifest="1" winArchitecture="32-bit"
-                       isDebug="1" optimisation="1" targetName="admv" useRuntimeLibDLL="0"
-                       headerPath="$(SolutionDir)..\..\dsp-utility" binaryPath=""/>
-        <CONFIGURATION name="Release(x86)" winWarningLevel="4" generateManifest="1"
-                       winArchitecture="32-bit" isDebug="0" optimisation="3" targetName="admv"
-                       useRuntimeLibDLL="0" headerPath="$(SolutionDir)..\..\dsp-utility"/>
-        <CONFIGURATION name="Debug(amd64)" winWarningLevel="4" generateManifest="1"
-                       winArchitecture="x64" isDebug="1" optimisation="1" targetName="admv"
-                       useRuntimeLibDLL="0" headerPath="$(SolutionDir)..\..\dsp-utility"/>
-        <CONFIGURATION name="Release(amd64)" winWarningLevel="4" generateManifest="1"
-                       winArchitecture="x64" isDebug="0" optimisation="3" targetName="admv"
-                       useRuntimeLibDLL="0" headerPath="$(SolutionDir)..\..\dsp-utility"/>
+        <CONFIGURATION name="Debug" isDebug="1" optimisation="1" targetName="admv" enablePluginBinaryCopyStep="0"/>
+        <CONFIGURATION name="Release" isDebug="0" optimisation="2" targetName="admv"
+                       enablePluginBinaryCopyStep="0"/>
       </CONFIGURATIONS>
       <MODULEPATHS>
         <MODULEPATH id="juce_video" path="juce/modules"/>
@@ -75,46 +66,26 @@
         <MODULEPATH id="juce_audio_formats" path="juce/modules"/>
         <MODULEPATH id="juce_audio_devices" path="juce/modules"/>
         <MODULEPATH id="juce_audio_basics" path="juce/modules"/>
-      </MODULEPATHS>
-    </VS2013>
-    <LINUX_MAKE targetFolder="Builds/Linux" vstFolder="~/SDKs/vstsdk2.4" extraCompilerFlags="-I &quot;/media/wizard/admv/dsp-utility/&quot; -fpermissive -std=c++11">
-      <CONFIGURATIONS>
-        <CONFIGURATION name="Debug" libraryPath="/usr/X11R6/lib/" isDebug="1" optimisation="1"
-                       targetName="admv"/>
-        <CONFIGURATION name="Release" libraryPath="/usr/X11R6/lib/" isDebug="0" optimisation="2"
-                       targetName="admv"/>
-      </CONFIGURATIONS>
-      <MODULEPATHS>
-        <MODULEPATH id="juce_video" path="juce/modules"/>
-        <MODULEPATH id="juce_gui_extra" path="juce/modules"/>
-        <MODULEPATH id="juce_gui_basics" path="juce/modules"/>
-        <MODULEPATH id="juce_graphics" path="juce/modules"/>
-        <MODULEPATH id="juce_events" path="juce/modules"/>
-        <MODULEPATH id="juce_data_structures" path="juce/modules"/>
-        <MODULEPATH id="juce_cryptography" path="juce/modules"/>
-        <MODULEPATH id="juce_core" path="juce/modules"/>
-        <MODULEPATH id="juce_audio_processors" path="juce/modules"/>
-        <MODULEPATH id="juce_audio_plugin_client" path="juce/modules"/>
-        <MODULEPATH id="juce_audio_formats" path="juce/modules"/>
-        <MODULEPATH id="juce_audio_devices" path="juce/modules"/>
-        <MODULEPATH id="juce_audio_basics" path="juce/modules"/>
+        <MODULEPATH id="juce_audio_utils" path="juce/modules"/>
       </MODULEPATHS>
     </LINUX_MAKE>
   </EXPORTFORMATS>
   <MODULES>
-    <MODULES id="juce_audio_basics" showAllCode="0" useLocalCopy="0"/>
-    <MODULES id="juce_audio_devices" showAllCode="0" useLocalCopy="0"/>
-    <MODULES id="juce_audio_formats" showAllCode="0" useLocalCopy="0"/>
-    <MODULES id="juce_audio_plugin_client" showAllCode="0" useLocalCopy="0"/>
-    <MODULES id="juce_audio_processors" showAllCode="0" useLocalCopy="0"/>
-    <MODULES id="juce_core" showAllCode="0" useLocalCopy="0"/>
-    <MODULES id="juce_cryptography" showAllCode="0" useLocalCopy="0"/>
-    <MODULES id="juce_data_structures" showAllCode="0" useLocalCopy="0"/>
-    <MODULES id="juce_events" showAllCode="0" useLocalCopy="0"/>
-    <MODULES id="juce_graphics" showAllCode="0" useLocalCopy="0"/>
-    <MODULES id="juce_gui_basics" showAllCode="0" useLocalCopy="0"/>
-    <MODULES id="juce_gui_extra" showAllCode="0" useLocalCopy="0"/>
-    <MODULES id="juce_video" showAllCode="0" useLocalCopy="0"/>
+    <MODULES id="juce_audio_basics" showAllCode="0" useLocalCopy="0" useGlobalPath="1"/>
+    <MODULES id="juce_audio_devices" showAllCode="0" useLocalCopy="0" useGlobalPath="1"/>
+    <MODULES id="juce_audio_formats" showAllCode="0" useLocalCopy="0" useGlobalPath="1"/>
+    <MODULES id="juce_audio_plugin_client" showAllCode="0" useLocalCopy="0" useGlobalPath="1"/>
+    <MODULES id="juce_audio_processors" showAllCode="0" useLocalCopy="0" useGlobalPath="1"/>
+    <MODULES id="juce_audio_utils" showAllCode="0" useLocalCopy="0" useGlobalPath="1"/>
+    <MODULES id="juce_core" showAllCode="0" useLocalCopy="0" useGlobalPath="1"/>
+    <MODULES id="juce_cryptography" showAllCode="0" useLocalCopy="0" useGlobalPath="1"/>
+    <MODULES id="juce_data_structures" showAllCode="0" useLocalCopy="0" useGlobalPath="1"/>
+    <MODULES id="juce_events" showAllCode="0" useLocalCopy="0" useGlobalPath="1"/>
+    <MODULES id="juce_graphics" showAllCode="0" useLocalCopy="0" useGlobalPath="1"/>
+    <MODULES id="juce_gui_basics" showAllCode="0" useLocalCopy="0" useGlobalPath="1"/>
+    <MODULES id="juce_gui_extra" showAllCode="0" useLocalCopy="0" useGlobalPath="1"/>
+    <MODULES id="juce_video" showAllCode="0" useLocalCopy="0" useGlobalPath="1"/>
   </MODULES>
-  <JUCEOPTIONS JUCE_QUICKTIME="disabled"/>
+  <JUCEOPTIONS JUCE_QUICKTIME="disabled" JUCE_WEB_BROWSER="0" JUCE_USE_WIN_WEBVIEW2="0"
+               JUCE_VST3_CAN_REPLACE_VST2="0"/>
 </JUCERPROJECT>
