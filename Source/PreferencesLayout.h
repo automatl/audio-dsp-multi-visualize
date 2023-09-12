@@ -36,8 +36,8 @@
                                                                     //[/Comments]
 */
 class PreferencesLayout  : public Component,
-                           public ComboBoxListener,
-                           public SliderListener
+                           public ComboBox::Listener,
+                           public Slider::Listener
 {
 public:
     //==============================================================================
